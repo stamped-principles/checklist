@@ -18,11 +18,15 @@ jobs:
 
             - name: Check VERSION was bumped
               run: |
-                  BASE_VERSION=$(git show origin/${{ github.base_ref }}:src/checklist.js | grep -m1 'const VERSION' | sed 's/.*"\(.*\)".*/\1/')
+                  BASE_VERSION=$(git show origin/${{ github.base_ref }}:src/checklist.js 2>/dev/null | grep -m1 'const VERSION' | sed 's/.*"\(.*\)".*/\1/')
                   PR_VERSION=$(grep -m1 'const VERSION' src/checklist.js | sed 's/.*"\(.*\)".*/\1/')
-                  if [ -z "$BASE_VERSION" ] || [ -z "$PR_VERSION" ]; then
+                  if [ -z "$PR_VERSION" ]; then
                     echo "::error file=src/checklist.js::Could not extract VERSION from checklist.js. Ensure it is defined as: const VERSION = \"x.y.z\";"
                     exit 1
+                  fi
+                  if [ -z "$BASE_VERSION" ]; then
+                    echo "VERSION introduced as $PR_VERSION (no prior version on base branch) ✓"
+                    exit 0
                   fi
                   echo "Base branch version: $BASE_VERSION"
                   echo "PR branch version:   $PR_VERSION"
