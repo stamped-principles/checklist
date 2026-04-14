@@ -174,7 +174,7 @@ function setSections(value) {
 }
 
 function loadSectionsPreference() {
-    const saved = localStorage.getItem("stamped_sections") || "on";
+    const saved = localStorage.getItem("stamped_sections") || "off";
     const radio = document.querySelector(`input[name="sections"][value="${saved}"]`);
     if (radio) {
         radio.checked = true;
