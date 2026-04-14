@@ -550,6 +550,17 @@ code {
     background: var(--may-color);
 }
 
+.version-indicator {
+    position: fixed;
+    bottom: 0.5rem;
+    left: 0.5rem;
+    font-size: 0.65rem;
+    color: var(--text-light);
+    opacity: 0.5;
+    z-index: 50;
+    pointer-events: none;
+}
+
 @media print {
     .header {
         position: relative;
@@ -597,6 +608,14 @@ code {
     }
     .check-item input:checked + label .checkbox-custom::after {
         content: "✓";
+    }
+    .version-indicator {
+        position: fixed;
+        bottom: 0.25rem;
+        left: 0.25rem;
+        opacity: 1;
+        font-size: 0.6rem;
+        color: #555;
     }
     .progress-bar-container {
         display: none;
