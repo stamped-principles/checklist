@@ -1,2 +1,7 @@
 node_modules/
 src/nohup.out
+dist/
+storybook-static/
+playwright-report/
+test-results/
+coverage/
