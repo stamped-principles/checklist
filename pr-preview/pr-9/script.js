@@ -166,6 +166,9 @@ function buildChecklist() {
     `;
         sectionDiv.appendChild(sectionHeader);
 
+        const cardsGrid = document.createElement("div");
+        cardsGrid.className = "cards-grid";
+
         section.principles.forEach((principle, pi) => {
             const card = document.createElement("div");
             card.className = `principle-card ${section.level}`;
@@ -206,9 +209,10 @@ function buildChecklist() {
             });
 
             card.appendChild(checklist);
-            sectionDiv.appendChild(card);
+            cardsGrid.appendChild(card);
         });
 
+        sectionDiv.appendChild(cardsGrid);
         container.appendChild(sectionDiv);
     });
 

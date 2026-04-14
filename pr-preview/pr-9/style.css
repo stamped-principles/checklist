@@ -127,13 +127,20 @@ body {
 }
 
 .container {
-    max-width: 860px;
+    max-width: 1600px;
     margin: 0 auto;
     padding: 0.8rem 0.8rem 2rem;
 }
 
 .section {
     margin-bottom: 1rem;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 0.5rem;
+    align-items: start;
 }
 
 .section-header {
@@ -179,7 +186,6 @@ body {
     background: var(--card-bg);
     border-radius: var(--radius);
     box-shadow: var(--shadow);
-    margin-bottom: 0.5rem;
     overflow: hidden;
     border-left: 4px solid transparent;
     transition:
