@@ -8,6 +8,8 @@ on:
 jobs:
     check-version-bump:
         runs-on: ubuntu-latest
+        permissions:
+            contents: read
         steps:
             - name: Checkout
               uses: actions/checkout@v4
@@ -16,11 +18,14 @@ jobs:
 
             - name: Check VERSION was bumped
               run: |
-                  git fetch origin ${{ github.base_ref }}
                   BASE_VERSION=$(git show origin/${{ github.base_ref }}:src/checklist.js | grep -m1 'const VERSION' | sed 's/.*"\(.*\)".*/\1/')
                   PR_VERSION=$(grep -m1 'const VERSION' src/checklist.js | sed 's/.*"\(.*\)".*/\1/')
-                  echo "Base branch version : $BASE_VERSION"
-                  echo "PR branch version   : $PR_VERSION"
+                  if [ -z "$BASE_VERSION" ] || [ -z "$PR_VERSION" ]; then
+                    echo "::error file=src/checklist.js::Could not extract VERSION from checklist.js. Ensure it is defined as: const VERSION = \"x.y.z\";"
+                    exit 1
+                  fi
+                  echo "Base branch version: $BASE_VERSION"
+                  echo "PR branch version:   $PR_VERSION"
                   if [ "$BASE_VERSION" = "$PR_VERSION" ]; then
                     echo "::error file=src/checklist.js::src/checklist.js was modified but VERSION was not bumped (still \"$PR_VERSION\"). Please update the VERSION constant."
                     exit 1
