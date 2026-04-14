@@ -1,3 +1,5 @@
+import { VERSION, DATA } from "./checklist.js";
+
 let checkboxStates = {};
 let responseStates = {};
 let currentMode = "checkboxes";
@@ -430,8 +432,58 @@ function showToast(message) {
     setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
-// Build on load
-buildChecklist();
+export {
+    setColumns,
+    loadColumnPreference,
+    setSections,
+    loadSectionsPreference,
+    setMode,
+    loadModePreference,
+    generateId,
+    buildChecklist,
+    handleCheck,
+    handleResponse,
+    handleReason,
+    applyResponseState,
+    updateAllCounts,
+    getState,
+    setState,
+    saveToLocalStorage,
+    loadFromLocalStorage,
+    autoSave,
+    shareURL,
+    showPromptURL,
+    loadFromURL,
+    confirmReset,
+    showToast,
+    init,
+};
 
-const versionEl = document.getElementById("version-indicator");
-if (versionEl) versionEl.textContent = "v" + VERSION;
+function init() {
+    buildChecklist();
+
+    const versionEl = document.getElementById("version-indicator");
+    if (versionEl) versionEl.textContent = "v" + VERSION;
+}
+
+// Expose functions to the global scope for inline DOM event handlers in index.html
+// and in elements created by buildChecklist(). ES modules do not pollute the global
+// scope automatically, so we assign them to window explicitly.
+if (typeof window !== "undefined") {
+    Object.assign(window, {
+        saveToLocalStorage,
+        shareURL,
+        confirmReset,
+        setColumns,
+        setSections,
+        setMode,
+        handleCheck,
+        handleResponse,
+        handleReason,
+    });
+}
+
+// Auto-initialize only in browser context outside of tests
+if (!import.meta.env?.VITEST && document.getElementById("app")) {
+    init();
+}
