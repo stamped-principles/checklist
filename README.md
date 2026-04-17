@@ -4,8 +4,11 @@ An interactive checklist for compliance to STAMPED principles.
 
 ## Editing the checklist
 
-The checklist questions and sections are defined in [`src/checklist.js`](src/checklist.js).
-Edit that file directly to update checklist content, then commit the change.
+The checklist questions and sections are defined in [`src/checklist.data.json`](src/checklist.data.json).
+The app exports this data through [`src/checklist.js`](src/checklist.js).
+
+Checklist entry structure is described in [`src/checklist.linkml.schema.json`](src/checklist.linkml.schema.json),
+and validated in unit tests.
 
 ## Versioning
 

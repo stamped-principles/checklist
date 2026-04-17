@@ -1,0 +1,74 @@
+{
+    "id": "https://stamped-principles.github.io/stamped-checklist/checklist.linkml.schema.json",
+    "name": "stamped_checklist",
+    "title": "STAMPED Checklist LinkML Schema",
+    "prefixes": {
+        "linkml": "https://w3id.org/linkml/",
+        "stamped": "https://stamped-principles.github.io/stamped-checklist/"
+    },
+    "default_prefix": "stamped",
+    "default_range": "string",
+    "classes": {
+        "Checklist": {
+            "tree_root": true,
+            "attributes": {
+                "version": {
+                    "required": true,
+                    "range": "string"
+                },
+                "entries": {
+                    "required": true,
+                    "multivalued": true,
+                    "range": "ChecklistSection"
+                }
+            }
+        },
+        "ChecklistSection": {
+            "attributes": {
+                "level": {
+                    "required": true,
+                    "range": "SectionLevel"
+                },
+                "label": {
+                    "required": true,
+                    "range": "string"
+                },
+                "principles": {
+                    "required": true,
+                    "multivalued": true,
+                    "range": "Principle"
+                }
+            }
+        },
+        "Principle": {
+            "attributes": {
+                "code": {
+                    "required": true,
+                    "range": "string"
+                },
+                "name": {
+                    "required": true,
+                    "range": "string"
+                },
+                "desc": {
+                    "required": true,
+                    "range": "string"
+                },
+                "items": {
+                    "required": true,
+                    "multivalued": true,
+                    "range": "string"
+                }
+            }
+        }
+    },
+    "enums": {
+        "SectionLevel": {
+            "permissible_values": {
+                "must": {},
+                "should": {},
+                "may": {}
+            }
+        }
+    }
+}
