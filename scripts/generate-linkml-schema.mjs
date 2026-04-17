@@ -86,8 +86,18 @@ function buildGeneratedSchema(linkml) {
 }
 
 function readLinkmlYaml(sourcePath = SOURCE_PATH) {
-    const yamlContent = fs.readFileSync(sourcePath, "utf8");
-    return YAML.parse(yamlContent);
+    let yamlContent;
+    try {
+        yamlContent = fs.readFileSync(sourcePath, "utf8");
+    } catch (error) {
+        throw new Error(`Failed to read LinkML YAML at ${sourcePath}: ${error.message}`);
+    }
+
+    try {
+        return YAML.parse(yamlContent);
+    } catch (error) {
+        throw new Error(`Failed to parse LinkML YAML at ${sourcePath}: ${error.message}`);
+    }
 }
 
 function generateLinkmlSchema(sourcePath = SOURCE_PATH) {
