@@ -36,7 +36,11 @@ test.describe("STAMPED Checklist App", () => {
         const links = page.locator(".principle-examples-link");
         await expect(links).toHaveCount(TOTAL_PRINCIPLES);
         await expect(links.first()).toHaveText("💡");
-        await expect(links.first()).toHaveAttribute("href", "https://stamped-principles.github.io/stamped-examples/s/");
+        await expect(links.first()).toHaveAttribute(
+            "href",
+            "https://stamped-principles.github.io/stamped-examples/stamped_principles/s/"
+        );
+        await expect(links.first()).not.toHaveAttribute("href", /404/i);
     });
 
     test("initial progress shows 0 items checked", async ({ page }) => {

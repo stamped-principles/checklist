@@ -45,7 +45,9 @@ describe("buildChecklist and state management", () => {
         expect(links.length).toBe(totalPrinciples);
 
         const firstLink = document.querySelector("#card_0_0 .principle-examples-link");
-        expect(firstLink.getAttribute("href")).toBe("https://stamped-principles.github.io/stamped-examples/s/");
+        expect(firstLink.getAttribute("href")).toBe(
+            "https://stamped-principles.github.io/stamped-examples/stamped_principles/s/"
+        );
         expect(firstLink.textContent).toBe("💡");
     });
 
