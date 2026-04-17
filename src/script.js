@@ -76,7 +76,7 @@ function generateId(sectionIdx, principleIdx, itemIdx) {
 function getPrincipleExamplesURL(principle) {
     const match = (principle.name || "").match(/[A-Za-z]/);
     const firstLetter = match ? match[0].toLowerCase() : "";
-    return `https://stamped-principles.github.io/stamped-examples/${firstLetter}/`;
+    return `https://stamped-principles.github.io/stamped-examples/stamped_principles/${firstLetter}/`;
 }
 
 function buildChecklist() {
