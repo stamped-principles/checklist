@@ -2,10 +2,18 @@
     "name": "checklist",
     "version": "1.0.0",
     "description": "An interactive checklist for compliance to STAMPED principles.",
-    "main": "script.js",
     "scripts": {
+        "dev": "vite --config config/vite.config.js",
+        "build": "vite build --config config/vite.config.js",
+        "preview": "vite preview --config config/vite.config.js",
         "format": "prettier --write .",
-        "format:check": "prettier --check ."
+        "format:check": "prettier --check .",
+        "test": "vitest run --config config/vitest.config.js",
+        "test:watch": "vitest --config config/vitest.config.js",
+        "test:coverage": "vitest run --coverage --config config/vitest.config.js",
+        "test:e2e": "playwright test --config config/playwright.config.js",
+        "storybook": "storybook dev -p 6006 --config-dir config/storybook",
+        "build-storybook": "storybook build --config-dir config/storybook"
     },
     "repository": {
         "type": "git",
@@ -14,12 +22,20 @@
     "keywords": [],
     "author": "",
     "license": "ISC",
-    "type": "commonjs",
+    "type": "module",
     "bugs": {
         "url": "https://github.com/stamped-principles/checklist/issues"
     },
     "homepage": "https://github.com/stamped-principles/checklist#readme",
     "devDependencies": {
-        "prettier": "^3.1.0"
+        "@playwright/test": "^1.59.1",
+        "@storybook/html-vite": "^10.3.5",
+        "@vitest/coverage-v8": "^4.1.4",
+        "chromatic": "^16.2.0",
+        "jsdom": "^29.0.2",
+        "prettier": "^3.1.0",
+        "storybook": "^10.3.5",
+        "vite": "^8.0.8",
+        "vitest": "^4.1.4"
     }
 }
