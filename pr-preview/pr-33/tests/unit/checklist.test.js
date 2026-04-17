@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import linkmlSchema from "../../checklist.linkml.schema.json";
 import { VERSION, DATA } from "../../checklist.js";
 
 describe("VERSION", () => {
@@ -9,6 +10,10 @@ describe("VERSION", () => {
     it("is a non-empty string", () => {
         expect(typeof VERSION).toBe("string");
         expect(VERSION.length).toBeGreaterThan(0);
+    });
+
+    it("matches the LinkML schema version", () => {
+        expect(VERSION).toBe(linkmlSchema.version);
     });
 });
 
