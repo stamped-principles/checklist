@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import schema from "../../checklist.linkml.schema.json";
 import checklistEntries from "../../checklist.data.json";
 import { VERSION, DATA } from "../../checklist.js";
-import { generateLinkmlSchema } from "../../../scripts/generate-linkml-schema.mjs";
+import { generateLinkmlSchema } from "../../scripts/generate-linkml-schema.mjs";
 
 function validateAttributeValue(value, range, schema, path) {
     if (schema.enums?.[range]) {

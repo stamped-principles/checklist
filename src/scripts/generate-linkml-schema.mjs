@@ -5,7 +5,7 @@ import YAML from "yaml";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const repoRoot = path.resolve(__dirname, "..");
+const repoRoot = path.resolve(__dirname, "..", "..");
 const SOURCE_PATH = path.join(repoRoot, "schema", "linkml.yaml");
 const OUTPUT_PATH = path.join(repoRoot, "src", "checklist.linkml.schema.json");
 

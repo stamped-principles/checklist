@@ -8,7 +8,7 @@
         "preview": "vite preview --config config/vite.config.js",
         "format": "prettier --write .",
         "format:check": "prettier --check .",
-        "generate:linkml-schema": "node scripts/generate-linkml-schema.mjs",
+        "generate:linkml-schema": "node src/scripts/generate-linkml-schema.mjs",
         "test": "vitest run --config config/vitest.config.js",
         "test:watch": "vitest --config config/vitest.config.js",
         "test:coverage": "vitest run --coverage --config config/vitest.config.js",
