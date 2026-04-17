@@ -1,5 +1,6 @@
 import DATA from "./checklist.data.json" with { type: "json" };
+import SCHEMA from "./checklist.linkml.schema.json" with { type: "json" };
 
-const VERSION = "1.0.1";
+const VERSION = SCHEMA.version;
 
 export { VERSION, DATA };

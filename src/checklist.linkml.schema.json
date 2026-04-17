@@ -2,6 +2,7 @@
     "id": "https://stamped-principles.github.io/stamped-checklist/checklist.linkml.schema.json",
     "name": "stamped_checklist",
     "title": "STAMPED Checklist LinkML Schema",
+    "version": "1.0.1",
     "prefixes": {
         "linkml": "https://w3id.org/linkml/",
         "stamped": "https://stamped-principles.github.io/stamped-checklist/"
