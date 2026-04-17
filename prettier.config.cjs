@@ -13,4 +13,12 @@ module.exports = {
     trailingComma: "es5",
     useTabs: false,
     vueIndentScriptAndStyle: false,
+    overrides: [
+        {
+            files: "schema/linkml.yaml",
+            options: {
+                tabWidth: 2,
+            },
+        },
+    ],
 };
