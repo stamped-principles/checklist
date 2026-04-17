@@ -7,7 +7,6 @@ version: 1.0.1
 
 prefixes:
     linkml: https://w3id.org/linkml/
-    stamped: https://github.com/stamped-principles/stamped-oao
     schema: http://schema.org/
     rfc2119: https://datatracker.ietf.org/doc/html/rfc2119#
     schema: https://schema.org/
