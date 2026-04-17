@@ -12,8 +12,8 @@
         "test:watch": "vitest --config config/vitest.config.js",
         "test:coverage": "vitest run --coverage --config config/vitest.config.js",
         "test:e2e": "playwright test --config config/playwright.config.js",
-        "storybook": "storybook dev -p 6006",
-        "build-storybook": "storybook build"
+        "storybook": "storybook dev -p 6006 --config-dir config/storybook",
+        "build-storybook": "storybook build --config-dir config/storybook"
     },
     "repository": {
         "type": "git",
