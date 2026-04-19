@@ -1,0 +1,15 @@
+imports:
+  - linkml:types
+  - stamped-principles-metaschema
+
+classes:
+  ChecklistEntry:
+    attributes:
+      principle_codes:
+        range: Principle
+        multivalued: true
+        required: true
+      items:
+        range: string
+        multivalued: true
+        required: true
