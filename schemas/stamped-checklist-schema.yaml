@@ -7,12 +7,12 @@ description: >-
   the separately versioned `stamped-principles` schema.
 license: CC-BY-4.0
 version: 1.0.0
+
 prefixes:
   linkml: https://w3id.org/linkml/
   schema: https://schema.org/
   stamped: https://github.com/stamped-principles/stamped-checklist/
-default_prefix: stamped
-default_range: string
+
 imports:
   - linkml:types
   - stamped-principles-schema
@@ -26,6 +26,7 @@ classes:
       version:
         description: Version string for this checklist (e.g., "2.0.0").
         slot_uri: schema:version
+        range: string
         required: true
         pattern: "^\\d+\\.\\d+\\.\\d+$"
       principles_version:
@@ -33,6 +34,7 @@ classes:
           Version of the `stamped-principles` schema whose principle codes
           are referenced by this checklist. Consumers SHOULD verify that the
           imported principles schema matches this version.
+        range: string
         required: true
         pattern: "^\\d+\\.\\d+\\.\\d+$"
       data:
