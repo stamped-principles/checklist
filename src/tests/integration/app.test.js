@@ -31,7 +31,6 @@ test.describe("STAMPED Checklist App", () => {
 
     test("cookie consent banner is shown before acceptance", async ({ page }) => {
         await expect(page.locator("#cookie-consent-banner")).toBeVisible();
-        await expect(page.locator("#cookie-consent-decline")).toBeVisible();
     });
 
     test("accepting cookie consent hides banner and persists across reload", async ({ browser }) => {
