@@ -70,9 +70,7 @@
                 },
                 {
                     "principle_codes": ["A.2"],
-                    "items": [
-                        "Is the workflow tested regularly to ensure instructions remain accurate?"
-                    ]
+                    "items": ["Is the workflow tested regularly to ensure instructions remain accurate?"]
                 },
                 {
                     "principle_codes": ["M.1"],
