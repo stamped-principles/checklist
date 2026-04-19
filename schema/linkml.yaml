@@ -10,12 +10,12 @@ version: 1.0.1
 prefixes:
   linkml: https://w3id.org/linkml/
   schema: https://schema.org/
-  rfc2119: https://datatracker.ietf.org/doc/html/rfc2119#
+  rfc2119: https://datatracker.ietf.org/doc/html/rfc2119
   stamped: https://github.com/stamped-principles/stamped-checklist/
-
+  
 imports:
   - linkml:types
-
+  
 enums:
   RequirementLevel:
     description: RFC 2119 requirement levels.
@@ -23,27 +23,41 @@ enums:
       must:
         title: MUST
         description: Absolute requirement.
-        meaning: rfc2119:section-1
+        meaning: rfc2119:#section-1
       should:
         title: SHOULD
         description: Strongly recommended.
-        meaning: rfc2119:section-3
+        meaning: rfc2119:#section-3
       may:
         title: MAY
         description: Optional / permissible.
-        meaning: rfc2119:section-5
-
+        meaning: rfc2119:#section-5
+        
   PrincipleName:
-    description: High-level principle categories.
+    description: High-level STAMPED principle categories.
     permissible_values:
-      Self-containment:
-      Tracking:
-      Actionability:
-      Portability:
-      Distributability:
-      Modularity:
-      Ephemerality:
-
+      self_contained:
+        title: Self-contained
+        description: Everything under one boundary.
+      tracked:
+        title: Tracked
+        description: Version control & provenance.
+      actionable:
+        title: Actionable
+        description: Executable & documented workflows.
+      modular:
+        title: Modular
+        description: Independent & composable modules.
+      portable:
+        title: Portable
+        description: Runs anywhere with explicit specifications.
+      ephemeral:
+        title: Ephemeral
+        description: Transient compute environment.
+      distributable:
+        title: Distributable
+        description: Shareable, persistent, and retrievable.
+        
 classes:
   Checklist:
     description: Top-level container for the full reproducibility checklist.
@@ -63,7 +77,8 @@ classes:
         multivalued: true
         inlined_as_list: true
         required: true
-
+        minimum_cardinality: 1
+        
   LevelGroup:
     description: A group of principles sharing the same requirement level.
     class_uri: schema:ItemList
@@ -79,7 +94,8 @@ classes:
         multivalued: true
         inlined_as_list: true
         required: true
-
+        minimum_cardinality: 1
+        
   Principle:
     description: A single reproducibility principle with verification items.
     class_uri: schema:DefinedTerm
