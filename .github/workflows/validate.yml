@@ -30,3 +30,6 @@ jobs:
             - name: Validate checklist
               working-directory: schemas
               run: linkml-validate --schema ./stamped-checklist-schema.yaml --target-class Checklist ./stamped-checklist.json
+
+            - name: Cross-schema referential integrity
+              run: python .github/scripts/check_cross_refs.py
