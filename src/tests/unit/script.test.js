@@ -68,7 +68,7 @@ describe("buildChecklist and state management", () => {
         expect(codeSpans.some((el) => el.textContent === "git")).toBe(true);
 
         const rawBackticks = Array.from(document.querySelectorAll(".check-item .check-text")).some((el) =>
-            el.innerHTML.includes("`git`")
+            /`[^`]*`/.test(el.innerHTML)
         );
         expect(rawBackticks).toBe(false);
     });

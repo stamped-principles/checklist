@@ -20,11 +20,13 @@ function escapeHtml(text) {
 }
 
 function renderInlineMarkdown(text) {
+    // Match inline code spans delimited by backticks.
     return String(text)
-        .split(/(`[^`]+`)/g)
+        .split(/(`[^`]*`)/g)
         .map((part) => {
-            if (part.startsWith("`") && part.endsWith("`") && part.length > 1) {
-                return `<code>${escapeHtml(part.slice(1, -1))}</code>`;
+            if (part.startsWith("`") && part.endsWith("`")) {
+                const innerText = part.slice(1, -1);
+                return `<code>${escapeHtml(innerText)}</code>`;
             }
             return escapeHtml(part);
         })
