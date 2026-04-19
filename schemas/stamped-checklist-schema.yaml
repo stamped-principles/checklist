@@ -72,13 +72,15 @@ classes:
     attributes:
       principle_codes:
         description: >-
-          Codes of the STAMPED principles this entry verifies. References
-          `Principle.code` in the `stamped-principles` schema.
+          Codes of the STAMPED principles this entry verifies.
+          References `Principle.code` in the stamped-principles schema
+          (version pinned via Checklist.principles_version).
         range: Principle
         multivalued: true
-        inlined: false
+        inlined: false          # serialize as identifier string
         required: true
         minimum_cardinality: 1
+        pattern: "^[A-Z]\\.[1-9][0-9]*$"
       items:
         description: >-
           Verification items used to evaluate conformance with the
