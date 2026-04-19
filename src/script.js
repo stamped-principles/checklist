@@ -1,9 +1,14 @@
 import { VERSION, DATA } from "./checklist.js";
+import { GA_MEASUREMENT_ID } from "./analytics.js";
 
 let checkboxStates = {};
 let responseStates = {};
 let currentMode = "checkboxes";
 let totalItems = 0;
+const COOKIE_CONSENT_KEY = "stamped_cookie_consent";
+const COOKIE_CONSENT_ACCEPTED = "accepted";
+const COOKIE_CONSENT_DECLINED = "declined";
+let analyticsInitialized = false;
 
 function setColumns(value) {
     const grids = document.querySelectorAll(".cards-grid");
@@ -450,6 +455,65 @@ function showToast(message) {
     setTimeout(() => toast.classList.remove("show"), 2500);
 }
 
+function initializeAnalytics() {
+    if (analyticsInitialized) return;
+
+    const existingScript = document.querySelector(`script[src*="${GA_MEASUREMENT_ID}"]`);
+    if (!existingScript) {
+        const script = document.createElement("script");
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+        document.head.appendChild(script);
+    }
+
+    window.dataLayer = window.dataLayer || [];
+    window.gtag =
+        window.gtag ||
+        function gtag() {
+            window.dataLayer.push(arguments);
+        };
+    window.gtag("js", new Date());
+    window.gtag("config", GA_MEASUREMENT_ID);
+    analyticsInitialized = true;
+}
+
+function hideCookieBanner() {
+    const banner = document.getElementById("cookie-consent-banner");
+    if (banner) banner.classList.add("hidden");
+}
+
+function showCookieBanner() {
+    const banner = document.getElementById("cookie-consent-banner");
+    if (banner) banner.classList.remove("hidden");
+}
+
+function acceptCookieConsent() {
+    localStorage.setItem(COOKIE_CONSENT_KEY, COOKIE_CONSENT_ACCEPTED);
+    hideCookieBanner();
+    initializeAnalytics();
+}
+
+function declineCookieConsent() {
+    localStorage.setItem(COOKIE_CONSENT_KEY, COOKIE_CONSENT_DECLINED);
+    hideCookieBanner();
+}
+
+function setupCookieConsent() {
+    const acceptButton = document.getElementById("cookie-consent-accept");
+    const declineButton = document.getElementById("cookie-consent-decline");
+    if (acceptButton) acceptButton.onclick = acceptCookieConsent;
+    if (declineButton) declineButton.onclick = declineCookieConsent;
+
+    if (localStorage.getItem(COOKIE_CONSENT_KEY) === COOKIE_CONSENT_ACCEPTED) {
+        hideCookieBanner();
+        initializeAnalytics();
+    } else if (localStorage.getItem(COOKIE_CONSENT_KEY) === COOKIE_CONSENT_DECLINED) {
+        hideCookieBanner();
+    } else {
+        showCookieBanner();
+    }
+}
+
 export {
     setColumns,
     loadColumnPreference,
@@ -479,6 +543,7 @@ export {
 
 function init() {
     buildChecklist();
+    setupCookieConsent();
 
     const versionEl = document.getElementById("version-indicator");
     if (versionEl) versionEl.textContent = "v" + VERSION;
