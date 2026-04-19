@@ -12,10 +12,10 @@ prefixes:
   schema: https://schema.org/
   rfc2119: https://datatracker.ietf.org/doc/html/rfc2119
   stamped: https://github.com/stamped-principles/stamped-checklist/
-  
+
 imports:
   - linkml:types
-  
+
 enums:
   RequirementLevel:
     description: RFC 2119 requirement levels.
@@ -32,7 +32,7 @@ enums:
         title: MAY
         description: Optional / permissible.
         meaning: rfc2119:#section-5
-        
+
   PrincipleName:
     description: High-level STAMPED principle categories.
     permissible_values:
@@ -57,7 +57,7 @@ enums:
       distributable:
         title: Distributable
         description: Shareable, persistent, and retrievable.
-        
+
 classes:
   Checklist:
     description: Top-level container for the full reproducibility checklist.
@@ -78,7 +78,7 @@ classes:
         inlined_as_list: true
         required: true
         minimum_cardinality: 1
-        
+
   LevelGroup:
     description: A group of principles sharing the same requirement level.
     class_uri: schema:ItemList
@@ -95,7 +95,7 @@ classes:
         inlined_as_list: true
         required: true
         minimum_cardinality: 1
-        
+
   Principle:
     description: A single reproducibility principle with verification items.
     class_uri: schema:DefinedTerm
