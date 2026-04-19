@@ -14,7 +14,7 @@
                     ]
                 },
                 {
-                    "principle_codes": ["T.1", "T.3"],
+                    "principle_codes": ["T.1", "T.3", "T.5"],
                     "items": [
                         "Are version control systems such as `Git` used for code, text, documentation, and configuration files?",
                         "Are version control systems such as `git-annex`, DataLad, or `Git` LFS used for large binary data?",
