@@ -64,7 +64,7 @@
         {
             "code": "P.1",
             "category": "portable",
-            "level": "must_not",
+            "level": "must",
             "statement": "Procedures MUST NOT depend on undocumented host environment state."
         },
         {
