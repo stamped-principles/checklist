@@ -1,0 +1,32 @@
+name: Validate LinkML Data
+
+on:
+  pull_request:
+    paths:
+      - 'schemas/**'
+      - '.github/workflows/validate-linkml.yml'
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install LinkML
+        run: pip install linkml
+
+      - name: Validate principles
+        run: |
+          linkml-validate --schema schemas/stamped-principles-schema.yaml stamped-principles.json
+
+      - name: Validate checklist
+        run: |
+          linkml-validate --schema schemas/stamped-checklist-schema.yaml stamped-checklist.json
