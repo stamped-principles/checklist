@@ -80,6 +80,15 @@ function buildCard(sec, principle, si, pi) {
     return card;
 }
 
+function withTheme(element, theme) {
+    const wrapper = document.createElement("div");
+    wrapper.setAttribute("data-theme", theme);
+    wrapper.style.padding = "0.5rem";
+    wrapper.style.background = "var(--bg)";
+    wrapper.appendChild(element);
+    return wrapper;
+}
+
 export default {
     title: "Components/ChecklistCard",
 };
@@ -116,4 +125,9 @@ export const CompleteCard = {
 export const InlineMarkdownCodeCard = {
     name: "Inline markdown code rendering",
     render: () => buildCard(section, section.principles[1], 0, 1),
+};
+
+export const MustCardDark = {
+    name: "MUST principle card (dark mode)",
+    render: () => withTheme(buildCard(section, section.principles[0], 0, 0), "dark"),
 };

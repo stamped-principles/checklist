@@ -16,6 +16,15 @@ function buildSectionDivider(section, si) {
     return divider;
 }
 
+function withTheme(element, theme) {
+    const wrapper = document.createElement("div");
+    wrapper.setAttribute("data-theme", theme);
+    wrapper.style.padding = "0.5rem";
+    wrapper.style.background = "var(--bg)";
+    wrapper.appendChild(element);
+    return wrapper;
+}
+
 export default {
     title: "Components/SectionDivider",
 };
@@ -33,4 +42,9 @@ export const ShouldDivider = {
 export const MayDivider = {
     name: "MAY section divider",
     render: () => buildSectionDivider(DATA[2], 2),
+};
+
+export const MustDividerDark = {
+    name: "MUST section divider (dark mode)",
+    render: () => withTheme(buildSectionDivider(DATA[0], 0), "dark"),
 };
