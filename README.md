@@ -2,6 +2,15 @@
 
 An interactive checklist for compliance to STAMPED principles.
 
+## Data model
+
+The checklist and principles are defined by [LinkML](https://linkml.io/) schemas (in YAML):
+
+- [`schemas/stamped-checklist-schema.yaml`](schemas/stamped-checklist-schema.yaml) — schema for checklist items (tiered MUST/SHOULD/MAY, grouped under principles).
+- [`schemas/stamped-principles-schema.yaml`](schemas/stamped-principles-schema.yaml) — schema for the STAMPED principle definitions referenced by the checklist.
+
+These LinkML models are the source of truth for the data shape. The JSON files under `schemas/` (see below) are *instances* that conform to these schemas and are what the web app actually loads at runtime.
+
 ## Editing the checklist
 
 Checklist entries are defined in [`schemas/stamped-checklist.json`](schemas/stamped-checklist.json)
