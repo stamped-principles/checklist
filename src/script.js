@@ -392,14 +392,12 @@ function shareURL() {
         params.set("responses", btoa(JSON.stringify(nonEmptyResponses)));
     }
 
-    const selectedColumns =
-        document.querySelector('input[name="cols"]:checked')?.value || localStorage.getItem("stamped_cols");
+    const selectedColumns = document.querySelector('input[name="cols"]:checked')?.value;
     if (selectedColumns && VALID_COLUMN_VALUES.has(selectedColumns)) {
         params.set("cols", selectedColumns);
     }
 
-    const selectedSections =
-        document.querySelector('input[name="sections"]:checked')?.value || localStorage.getItem("stamped_sections");
+    const selectedSections = document.querySelector('input[name="sections"]:checked')?.value;
     if (selectedSections && VALID_SECTION_VALUES.has(selectedSections)) {
         params.set("sections", selectedSections);
     }
@@ -424,12 +422,19 @@ function showPromptURL(url) {
     prompt("Copy this shareable URL:", url);
 }
 
+function checkRadioByValue(name, value) {
+    const radio = Array.from(document.querySelectorAll(`input[name="${name}"]`)).find((input) => input.value === value);
+    if (radio) radio.checked = true;
+}
+
 function loadFromURL() {
     const params = new URLSearchParams(window.location.search);
     const stateParam = params.get("state");
     const responsesParam = params.get("responses");
     const colsParam = params.get("cols");
     const sectionsParam = params.get("sections");
+    const validColsParam = colsParam && VALID_COLUMN_VALUES.has(colsParam) ? colsParam : null;
+    const validSectionsParam = sectionsParam && VALID_SECTION_VALUES.has(sectionsParam) ? sectionsParam : null;
 
     if (!stateParam && !responsesParam && !colsParam && !sectionsParam) return;
 
@@ -468,25 +473,23 @@ function loadFromURL() {
         }
     }
 
-    if (colsParam && VALID_COLUMN_VALUES.has(colsParam)) {
-        const columnRadio = document.querySelector(`input[name="cols"][value="${colsParam}"]`);
-        if (columnRadio) columnRadio.checked = true;
-        setColumns(colsParam);
+    if (validColsParam) {
+        checkRadioByValue("cols", validColsParam);
+        setColumns(validColsParam);
     }
 
-    if (sectionsParam && VALID_SECTION_VALUES.has(sectionsParam)) {
-        const sectionsRadio = document.querySelector(`input[name="sections"][value="${sectionsParam}"]`);
-        if (sectionsRadio) sectionsRadio.checked = true;
-        setSections(sectionsParam);
+    if (validSectionsParam) {
+        checkRadioByValue("sections", validSectionsParam);
+        setSections(validSectionsParam);
     }
 
     // Clean stateful URL params while keeping view-configuration params.
     const cleanParams = new URLSearchParams();
-    if (colsParam && VALID_COLUMN_VALUES.has(colsParam)) {
-        cleanParams.set("cols", colsParam);
+    if (validColsParam) {
+        cleanParams.set("cols", validColsParam);
     }
-    if (sectionsParam && VALID_SECTION_VALUES.has(sectionsParam)) {
-        cleanParams.set("sections", sectionsParam);
+    if (validSectionsParam) {
+        cleanParams.set("sections", validSectionsParam);
     }
     const cleanURL = cleanParams.toString()
         ? `${window.location.pathname}?${cleanParams.toString()}`

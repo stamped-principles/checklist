@@ -7,6 +7,11 @@ import { GA_MEASUREMENT_ID } from "../../analytics.js";
 function setupDOM() {
     document.querySelectorAll('script[src*="googletagmanager.com/gtag/js?id="]').forEach((el) => el.remove());
     document.body.innerHTML = `
+        <label><input type="radio" name="cols" value="1" /></label>
+        <label><input type="radio" name="cols" value="2" /></label>
+        <label><input type="radio" name="cols" value="auto" checked /></label>
+        <label><input type="radio" name="sections" value="on" /></label>
+        <label><input type="radio" name="sections" value="off" checked /></label>
         <div id="app"></div>
         <div class="progress-bar" id="progressBar" style="width:0%"></div>
         <div id="progressText"></div>
@@ -175,8 +180,8 @@ describe("URL state encoding/decoding", () => {
             value: { writeText },
         });
 
-        script.setColumns("2");
-        script.setSections("on");
+        document.querySelector('input[name="cols"][value="2"]').checked = true;
+        document.querySelector('input[name="sections"][value="on"]').checked = true;
         script.shareURL();
 
         const sharedURL = new URL(writeText.mock.calls[0][0]);
@@ -194,6 +199,41 @@ describe("URL state encoding/decoding", () => {
         expect(grid.classList.contains("cols-1")).toBe(true);
         expect(app.classList.contains("flat-mode")).toBe(false);
         expect(window.location.search).toBe("?cols=1&sections=on");
+    });
+
+    it("loadFromURL ignores invalid view params and removes them from URL", () => {
+        window.history.replaceState({}, "", "/?cols=3&sections=invalid");
+
+        expect(() => script.loadFromURL()).not.toThrow();
+        expect(window.location.search).toBe("");
+        expect(document.querySelector(".cards-grid").classList.contains("cols-auto")).toBe(true);
+        expect(document.getElementById("app").classList.contains("flat-mode")).toBe(true);
+    });
+
+    it("loadFromURL view params override and persist over prior localStorage preferences", () => {
+        localStorage.setItem("stamped_cols", "auto");
+        localStorage.setItem("stamped_sections", "off");
+        window.history.replaceState({}, "", "/?cols=2&sections=on");
+
+        script.loadFromURL();
+
+        expect(localStorage.getItem("stamped_cols")).toBe("2");
+        expect(localStorage.getItem("stamped_sections")).toBe("on");
+        expect(document.querySelector(".cards-grid").classList.contains("cols-2")).toBe(true);
+        expect(document.getElementById("app").classList.contains("flat-mode")).toBe(false);
+    });
+
+    it("localStorage view preferences are still honored when URL has no view params", () => {
+        localStorage.setItem("stamped_cols", "2");
+        localStorage.setItem("stamped_sections", "on");
+        window.history.replaceState({}, "", "/");
+
+        script.loadFromURL();
+        script.loadColumnPreference();
+        script.loadSectionsPreference();
+
+        expect(document.querySelector(".cards-grid").classList.contains("cols-2")).toBe(true);
+        expect(document.getElementById("app").classList.contains("flat-mode")).toBe(false);
     });
 });
 
