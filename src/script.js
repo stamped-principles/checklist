@@ -3,7 +3,7 @@ import { GA_MEASUREMENT_ID } from "./analytics.js";
 
 let checkboxStates = {};
 let responseStates = {};
-let currentMode = "checkboxes";
+let currentMode = "responses";
 let totalItems = 0;
 const COOKIE_CONSENT_KEY = "stamped_cookie_consent";
 const COOKIE_CONSENT_ACCEPTED = "accepted";
@@ -76,26 +76,14 @@ function loadSectionsPreference() {
 }
 
 function setMode(value) {
-    currentMode = value;
+    currentMode = "responses";
     const container = document.getElementById("app");
-    if (value === "responses") {
-        container.classList.add("mode-responses");
-    } else {
-        container.classList.remove("mode-responses");
-    }
+    container.classList.add("mode-responses");
     updateAllCounts();
-    try {
-        localStorage.setItem("stamped_mode", value);
-    } catch (e) {}
 }
 
 function loadModePreference() {
-    const saved = localStorage.getItem("stamped_mode") || "checkboxes";
-    const radio = document.querySelector(`input[name="mode"][value="${saved}"]`);
-    if (radio) {
-        radio.checked = true;
-        setMode(saved);
-    }
+    setMode("responses");
 }
 
 function getPreferredTheme() {
@@ -312,10 +300,7 @@ function updateAllCounts() {
 
             principle.items.forEach((_, ii) => {
                 const id = generateId(si, pi, ii);
-                const isChecked =
-                    currentMode === "checkboxes"
-                        ? checkboxStates[id]
-                        : responseStates[id] && responseStates[id].value === "yes";
+                const isChecked = responseStates[id] && responseStates[id].value === "yes";
                 if (isChecked) checked++;
             });
 
@@ -342,7 +327,7 @@ function updateAllCounts() {
 
     const pct = total > 0 ? Math.round((totalChecked / total) * 100) : 0;
     document.getElementById("progressBar").style.width = pct + "%";
-    const modeLabel = currentMode === "responses" ? "meeting requirements" : "checked";
+    const modeLabel = "meeting requirements";
     document.getElementById("progressText").textContent = `${totalChecked} / ${total} items ${modeLabel} (${pct}%)`;
 }
 
@@ -495,7 +480,7 @@ function loadFromURL() {
 
 // Reset
 function confirmReset() {
-    if (confirm("Are you sure you want to reset all checkboxes? This cannot be undone.")) {
+    if (confirm("Are you sure you want to reset all responses? This cannot be undone.")) {
         Object.keys(checkboxStates).forEach((id) => {
             setCheckboxState(id, false);
         });

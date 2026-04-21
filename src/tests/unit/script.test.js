@@ -105,21 +105,26 @@ describe("buildChecklist and state management", () => {
         expect(script.getState()).toEqual(initialState);
     });
 
-    it("updateAllCounts reflects checked items", () => {
+    it("updateAllCounts reflects yes responses", () => {
         const id = script.generateId(0, 0, 0);
-        script.setState({ [id]: true });
+        const yesBtn = document.getElementById(`yes_${id}`);
+        if (!yesBtn.classList.contains("active")) {
+            script.handleResponse(id, "yes");
+        }
         script.updateAllCounts();
         const countEl = document.getElementById("count_0_0");
         const [checked] = countEl.textContent.split("/").map(Number);
         expect(checked).toBe(1);
     });
 
-    it("updateAllCounts marks card complete when all items checked", () => {
-        // Check all items in first principle
+    it("updateAllCounts marks card complete when all items are yes", () => {
         const firstPrinciple = DATA[0].principles[0];
         firstPrinciple.items.forEach((_, ii) => {
             const id = script.generateId(0, 0, ii);
-            script.setState({ [id]: true });
+            const yesBtn = document.getElementById(`yes_${id}`);
+            if (!yesBtn.classList.contains("active")) {
+                script.handleResponse(id, "yes");
+            }
         });
         script.updateAllCounts();
         const card = document.getElementById("card_0_0");
