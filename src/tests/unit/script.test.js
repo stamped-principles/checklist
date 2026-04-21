@@ -99,6 +99,43 @@ describe("buildChecklist and state management", () => {
         expect(cb.checked).toBe(false);
     });
 
+    it("response yes/no state drives checkbox state", () => {
+        const id = script.generateId(0, 0, 0);
+        const cb = document.getElementById(id);
+
+        script.handleResponse(id, "yes");
+        expect(cb.checked).toBe(true);
+
+        script.handleResponse(id, "no");
+        expect(cb.checked).toBe(false);
+    });
+
+    it("checkbox state changes drive response buttons", () => {
+        const id = script.generateId(0, 0, 0);
+        const cb = document.getElementById(id);
+
+        cb.checked = true;
+        script.handleCheck(id);
+        expect(document.getElementById(`yes_${id}`).classList.contains("active")).toBe(true);
+
+        cb.checked = false;
+        script.handleCheck(id);
+        expect(document.getElementById(`no_${id}`).classList.contains("active")).toBe(true);
+    });
+
+    it("reason text is preserved when switching away from no and back", () => {
+        const id = script.generateId(0, 0, 0);
+        const reasonEl = document.getElementById(`reason_${id}`);
+
+        script.handleResponse(id, "no");
+        reasonEl.value = "Missing data provenance evidence";
+        script.handleReason(id, reasonEl.value);
+        script.handleResponse(id, "yes");
+        script.handleResponse(id, "no");
+
+        expect(reasonEl.value).toBe("Missing data provenance evidence");
+    });
+
     it("setState ignores unknown ids", () => {
         const initialState = { ...script.getState() };
         script.setState({ unknown_id: true });
