@@ -34,6 +34,7 @@ describe("buildChecklist and state management", () => {
 
     beforeEach(async () => {
         setupDOM();
+        localStorage.clear();
         vi.resetModules();
         script = await import("../../script.js");
         script.buildChecklist();
@@ -80,23 +81,23 @@ describe("buildChecklist and state management", () => {
         expect(allFalse).toBe(true);
     });
 
-    it("setState updates checkbox state and DOM", () => {
+    it("setState updates yes response state and DOM", () => {
         const id = script.generateId(0, 0, 0);
         script.setState({ [id]: true });
         const state = script.getState();
         expect(state[id]).toBe(true);
-        const cb = document.getElementById(id);
-        expect(cb.checked).toBe(true);
+        const yesBtn = document.getElementById(`yes_${id}`);
+        expect(yesBtn.classList.contains("active")).toBe(true);
     });
 
-    it("setState with false unchecks the checkbox", () => {
+    it("setState with false clears yes response", () => {
         const id = script.generateId(0, 0, 0);
         script.setState({ [id]: true });
         script.setState({ [id]: false });
         const state = script.getState();
         expect(state[id]).toBe(false);
-        const cb = document.getElementById(id);
-        expect(cb.checked).toBe(false);
+        const yesBtn = document.getElementById(`yes_${id}`);
+        expect(yesBtn.classList.contains("active")).toBe(false);
     });
 
     it("setState ignores unknown ids", () => {
@@ -105,21 +106,20 @@ describe("buildChecklist and state management", () => {
         expect(script.getState()).toEqual(initialState);
     });
 
-    it("updateAllCounts reflects checked items", () => {
+    it("updateAllCounts reflects yes responses", () => {
         const id = script.generateId(0, 0, 0);
-        script.setState({ [id]: true });
+        script.handleResponse(id, "yes");
         script.updateAllCounts();
         const countEl = document.getElementById("count_0_0");
         const [checked] = countEl.textContent.split("/").map(Number);
         expect(checked).toBe(1);
     });
 
-    it("updateAllCounts marks card complete when all items checked", () => {
-        // Check all items in first principle
+    it("updateAllCounts marks card complete when all items are yes", () => {
         const firstPrinciple = DATA[0].principles[0];
         firstPrinciple.items.forEach((_, ii) => {
             const id = script.generateId(0, 0, ii);
-            script.setState({ [id]: true });
+            script.handleResponse(id, "yes");
         });
         script.updateAllCounts();
         const card = document.getElementById("card_0_0");
