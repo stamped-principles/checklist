@@ -345,6 +345,8 @@ describe("theme toggle", () => {
 describe("setColumns", () => {
     beforeEach(async () => {
         setupDOM();
+        window.history.replaceState({}, "", "/");
+        localStorage.clear();
         // Add cards-grid to DOM for setColumns to operate on
         document.getElementById("app").innerHTML = `<div class="cards-grid cols-auto"></div>`;
         vi.resetModules();
@@ -366,11 +368,19 @@ describe("setColumns", () => {
         expect(grid.classList.contains("cols-auto")).toBe(true);
         expect(grid.classList.contains("cols-2")).toBe(false);
     });
+
+    it("updates URL in real time when columns change", async () => {
+        const { setColumns } = await import("../../script.js");
+        setColumns(2);
+        expect(window.location.search).toBe("?cols=2");
+    });
 });
 
 describe("setSections", () => {
     beforeEach(async () => {
         setupDOM();
+        window.history.replaceState({}, "", "/");
+        localStorage.clear();
         vi.resetModules();
     });
 
@@ -387,5 +397,19 @@ describe("setSections", () => {
         setSections("on");
         const container = document.getElementById("app");
         expect(container.classList.contains("flat-mode")).toBe(false);
+    });
+
+    it("updates URL in real time when sections change", async () => {
+        const { setSections } = await import("../../script.js");
+        setSections("on");
+        expect(window.location.search).toBe("?sections=on");
+    });
+
+    it("keeps both cols and sections params while toggling layout options", async () => {
+        const { setColumns, setSections } = await import("../../script.js");
+        document.getElementById("app").innerHTML = `<div class="cards-grid cols-auto"></div>`;
+        setColumns(1);
+        setSections("on");
+        expect(window.location.search).toBe("?cols=1&sections=on");
     });
 });

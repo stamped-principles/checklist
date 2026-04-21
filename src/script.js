@@ -34,7 +34,31 @@ function renderInlineMarkdown(text) {
         .join("");
 }
 
-function setColumns(value) {
+function syncViewConfigURL() {
+    const params = new URLSearchParams(window.location.search);
+    const savedColumns = localStorage.getItem("stamped_cols");
+    const savedSections = localStorage.getItem("stamped_sections");
+
+    if (savedColumns && VALID_COLUMN_VALUES.has(savedColumns)) {
+        params.set("cols", savedColumns);
+    } else {
+        params.delete("cols");
+    }
+
+    if (savedSections && VALID_SECTION_VALUES.has(savedSections)) {
+        params.set("sections", savedSections);
+    } else {
+        params.delete("sections");
+    }
+
+    params.delete("state");
+    params.delete("responses");
+
+    const nextURL = params.toString() ? `${window.location.pathname}?${params.toString()}` : window.location.pathname;
+    window.history.replaceState({}, "", nextURL);
+}
+
+function setColumns(value, shouldSyncURL = true) {
     const grids = document.querySelectorAll(".cards-grid");
     grids.forEach((g) => {
         g.classList.remove("cols-1", "cols-2", "cols-auto");
@@ -42,6 +66,7 @@ function setColumns(value) {
     });
     try {
         localStorage.setItem("stamped_cols", String(value));
+        if (shouldSyncURL) syncViewConfigURL();
     } catch (e) {}
 }
 
@@ -50,11 +75,11 @@ function loadColumnPreference() {
     const radio = document.querySelector(`input[name="cols"][value="${saved}"]`);
     if (radio) {
         radio.checked = true;
-        setColumns(saved);
+        setColumns(saved, false);
     }
 }
 
-function setSections(value) {
+function setSections(value, shouldSyncURL = true) {
     const container = document.getElementById("app");
     if (value === "off") {
         container.classList.add("flat-mode");
@@ -63,6 +88,7 @@ function setSections(value) {
     }
     try {
         localStorage.setItem("stamped_sections", String(value));
+        if (shouldSyncURL) syncViewConfigURL();
     } catch (e) {}
 }
 
@@ -71,7 +97,7 @@ function loadSectionsPreference() {
     const radio = document.querySelector(`input[name="sections"][value="${saved}"]`);
     if (radio) {
         radio.checked = true;
-        setSections(saved);
+        setSections(saved, false);
     }
 }
 
@@ -475,12 +501,12 @@ function loadFromURL() {
 
     if (validColsParam) {
         checkRadioByValue("cols", validColsParam);
-        setColumns(validColsParam);
+        setColumns(validColsParam, false);
     }
 
     if (validSectionsParam) {
         checkRadioByValue("sections", validSectionsParam);
-        setSections(validSectionsParam);
+        setSections(validSectionsParam, false);
     }
 
     // Clean stateful URL params while keeping view-configuration params.
