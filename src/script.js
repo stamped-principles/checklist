@@ -16,6 +16,13 @@ function normalizeReason(value) {
     return String(value || "").slice(0, MAX_REASON_LENGTH);
 }
 
+function updateReasonCounter(id, reasonValue = "") {
+    const counterEl = document.getElementById(`reason_count_${id}`);
+    if (counterEl) {
+        counterEl.textContent = `${normalizeReason(reasonValue).length}/${MAX_REASON_LENGTH}`;
+    }
+}
+
 function escapeHtml(text) {
     return String(text)
         .replaceAll("&", "&amp;")
@@ -253,6 +260,7 @@ function buildChecklist() {
               </div>
             </div>
             <textarea class="reason-input" id="reason_${id}" placeholder="Reason for not meeting requirement..." rows="2" maxlength="${MAX_REASON_LENGTH}" oninput="handleReason('${id}', this.value)"></textarea>
+            <div class="reason-counter" id="reason_count_${id}">0/${MAX_REASON_LENGTH}</div>
           </div>
         `;
                 checklist.appendChild(checkItem);
@@ -290,9 +298,12 @@ function handleResponse(id, value) {
     if (reasonEl) {
         const showReason = responseStates[id].value === "no";
         reasonEl.classList.toggle("visible", showReason);
+        const counterEl = document.getElementById(`reason_count_${id}`);
+        if (counterEl) counterEl.classList.toggle("visible", showReason);
         if (!showReason) {
             responseStates[id].reason = "";
             reasonEl.value = "";
+            updateReasonCounter(id, "");
         }
     }
 
@@ -307,6 +318,7 @@ function handleReason(id, value) {
     if (reasonEl && reasonEl.value !== normalizedValue) {
         reasonEl.value = normalizedValue;
     }
+    updateReasonCounter(id, normalizedValue);
     autoSave();
 }
 
@@ -322,6 +334,11 @@ function applyResponseState(id) {
         reasonEl.classList.toggle("visible", state.value === "no");
         state.reason = normalizeReason(state.reason);
         reasonEl.value = state.reason;
+        updateReasonCounter(id, state.reason);
+    }
+    const counterEl = document.getElementById(`reason_count_${id}`);
+    if (counterEl) {
+        counterEl.classList.toggle("visible", state.value === "no");
     }
 }
 
