@@ -1,6 +1,10 @@
 import { withTheme } from "./utils.js";
 
-function buildMainPageLayout() {
+function buildMainPageLayout({
+    progressState = "incomplete",
+    progressWidth = "0%",
+    progressLabel = "0 / 0 items",
+} = {}) {
     const root = document.createElement("div");
     root.innerHTML = `
         <div class="header">
@@ -24,9 +28,9 @@ function buildMainPageLayout() {
             <h1>📋 STAMPED Compliance Checklist</h1>
             <p>Assess your research objects against the STAMPED principles</p>
             <div class="progress-bar-container">
-                <div class="progress-bar" id="progressBar"></div>
+                <div class="progress-bar ${progressState}" id="progressBar" style="width:${progressWidth}"></div>
             </div>
-            <div class="progress-text" id="progressText">0 / 0 items checked (0%)</div>
+            <div class="progress-text ${progressState}" id="progressText">${progressLabel} meeting requirements</div>
         </div>
         <div class="toolbar">
             <button type="button"><span class="icon">🖨️</span> Print</button>
@@ -83,11 +87,21 @@ export default {
 };
 
 export const Default = {
-    name: "Main page layout",
+    name: "Main page layout (incomplete)",
     render: () => buildMainPageLayout(),
 };
 
+export const Passing = {
+    name: "Main page layout (passing)",
+    render: () => buildMainPageLayout({ progressState: "done", progressWidth: "100%", progressLabel: "3 / 3 items" }),
+};
+
+export const Failed = {
+    name: "Main page layout (failed)",
+    render: () => buildMainPageLayout({ progressState: "failed", progressWidth: "67%", progressLabel: "2 / 3 items" }),
+};
+
 export const DefaultDark = {
-    name: "Main page layout (dark mode)",
+    name: "Main page layout (dark mode, incomplete)",
     render: () => withTheme(buildMainPageLayout(), "dark"),
 };

@@ -154,9 +154,12 @@ test.describe("STAMPED Checklist App", () => {
     });
 
     test("initial progress shows 0 items checked", async ({ page }) => {
+        const progressBar = page.locator("#progressBar");
         const progressText = page.locator("#progressText");
         await expect(progressText).toContainText("0 /");
         await expect(progressText).toContainText("(0%)");
+        await expect(progressBar).toHaveClass(/incomplete/);
+        await expect(progressText).toHaveClass(/incomplete/);
     });
 
     test("answering yes updates the principle counter", async ({ page }) => {
@@ -199,6 +202,28 @@ test.describe("STAMPED Checklist App", () => {
     test("progress bar percentage updates after checking items", async ({ page }) => {
         await answerYes(page, page.locator(".yes-btn").first());
         await expect(page.locator("#progressText")).not.toContainText("(0%)");
+        await expect(page.locator("#progressBar")).toHaveClass(/incomplete/);
+        await expect(page.locator("#progressText")).toHaveClass(/incomplete/);
+    });
+
+    test("answering no marks top progress as failed", async ({ page }) => {
+        await page.locator(".no-btn").first().click();
+        await expect(page.locator("#progressBar")).toHaveClass(/failed/);
+        await expect(page.locator("#progressBar")).not.toHaveClass(/done/);
+        await expect(page.locator("#progressText")).toHaveClass(/failed/);
+    });
+
+    test("answering yes on every item marks top progress as done", async ({ page }) => {
+        const yesButtons = page.locator(".yes-btn");
+        const count = await yesButtons.count();
+
+        for (let i = 0; i < count; i++) {
+            await answerYes(page, yesButtons.nth(i));
+        }
+
+        await expect(page.locator("#progressBar")).toHaveClass(/done/);
+        await expect(page.locator("#progressBar")).not.toHaveClass(/failed/);
+        await expect(page.locator("#progressText")).toHaveClass(/done/);
     });
 
     test("toolbar does not render a Share URL button", async ({ page }) => {

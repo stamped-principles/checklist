@@ -348,6 +348,7 @@ function applyResponseState(id) {
 function updateAllCounts() {
     let totalChecked = 0;
     let total = 0;
+    let hasFailed = false;
 
     DATA.forEach((section, si) => {
         let sectionChecked = 0;
@@ -362,7 +363,10 @@ function updateAllCounts() {
                 const id = generateId(si, pi, ii);
                 const responseValue = responseStates[id] && responseStates[id].value;
                 if (responseValue === "yes") checked++;
-                if (responseValue === "no") failed = true;
+                if (responseValue === "no") {
+                    failed = true;
+                    hasFailed = true;
+                }
             });
 
             const countEl = document.getElementById(`count_${si}_${pi}`);
@@ -387,9 +391,19 @@ function updateAllCounts() {
     });
 
     const pct = total > 0 ? Math.round((totalChecked / total) * 100) : 0;
-    document.getElementById("progressBar").style.width = pct + "%";
+    const progressBar = document.getElementById("progressBar");
+    const isDone = total > 0 && totalChecked === total;
+    const progressStateClass = isDone ? "done" : hasFailed ? "failed" : "incomplete";
+
+    progressBar.style.width = pct + "%";
+    progressBar.classList.remove("done", "failed", "incomplete");
+    progressBar.classList.add(progressStateClass);
+
     const modeLabel = "meeting requirements";
-    document.getElementById("progressText").textContent = `${totalChecked} / ${total} items ${modeLabel} (${pct}%)`;
+    const progressText = document.getElementById("progressText");
+    progressText.textContent = `${totalChecked} / ${total} items ${modeLabel} (${pct}%)`;
+    progressText.classList.remove("done", "failed", "incomplete");
+    progressText.classList.add(progressStateClass);
 }
 
 function getState() {

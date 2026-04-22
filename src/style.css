@@ -99,11 +99,19 @@ body {
 }
 
 .progress-bar {
-    background: var(--check-color);
+    background: var(--text-light);
     height: 100%;
     border-radius: 20px;
     transition: width 0.4s ease;
     width: 0%;
+}
+
+.progress-bar.done {
+    background: var(--check-color);
+}
+
+.progress-bar.failed {
+    background: var(--must-color);
 }
 
 .progress-text {
@@ -111,6 +119,15 @@ body {
     margin-top: 0.25rem;
     opacity: 0.9;
     font-weight: 600;
+    color: var(--text-light);
+}
+
+.progress-text.done {
+    color: var(--check-color);
+}
+
+.progress-text.failed {
+    color: var(--must-color);
 }
 
 .toolbar {

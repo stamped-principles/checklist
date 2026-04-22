@@ -154,6 +154,19 @@ describe("buildChecklist and state management", () => {
         expect(checked).toBe(1);
     });
 
+    it("updateAllCounts keeps top progress incomplete when checklist is not fully answered", () => {
+        const id = script.generateId(0, 0, 0);
+        script.handleResponse(id, "yes");
+        script.updateAllCounts();
+
+        const progressBar = document.getElementById("progressBar");
+        const progressText = document.getElementById("progressText");
+        expect(progressBar.classList.contains("incomplete")).toBe(true);
+        expect(progressBar.classList.contains("done")).toBe(false);
+        expect(progressBar.classList.contains("failed")).toBe(false);
+        expect(progressText.classList.contains("incomplete")).toBe(true);
+    });
+
     it("updateAllCounts marks card complete when all items are yes", () => {
         const firstPrinciple = DATA[0].principles[0];
         firstPrinciple.items.forEach((_, ii) => {
@@ -188,6 +201,36 @@ describe("buildChecklist and state management", () => {
         const countEl = document.getElementById("count_0_0");
         expect(countEl.classList.contains("failed")).toBe(true);
         expect(countEl.classList.contains("done")).toBe(false);
+    });
+
+    it("updateAllCounts marks top progress done when all items are yes", () => {
+        DATA.forEach((section, si) => {
+            section.principles.forEach((principle, pi) => {
+                principle.items.forEach((_, ii) => {
+                    const id = script.generateId(si, pi, ii);
+                    script.handleResponse(id, "yes");
+                });
+            });
+        });
+        script.updateAllCounts();
+
+        const progressBar = document.getElementById("progressBar");
+        const progressText = document.getElementById("progressText");
+        expect(progressBar.classList.contains("done")).toBe(true);
+        expect(progressBar.classList.contains("failed")).toBe(false);
+        expect(progressText.classList.contains("done")).toBe(true);
+    });
+
+    it("updateAllCounts marks top progress failed when any item is no", () => {
+        const id = script.generateId(0, 0, 0);
+        script.handleResponse(id, "no");
+        script.updateAllCounts();
+
+        const progressBar = document.getElementById("progressBar");
+        const progressText = document.getElementById("progressText");
+        expect(progressBar.classList.contains("failed")).toBe(true);
+        expect(progressBar.classList.contains("done")).toBe(false);
+        expect(progressText.classList.contains("failed")).toBe(true);
     });
 });
 
