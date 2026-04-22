@@ -355,17 +355,19 @@ function updateAllCounts() {
 
         section.principles.forEach((principle, pi) => {
             let checked = 0;
+            let failed = false;
             const numItems = principle.items.length;
 
             principle.items.forEach((_, ii) => {
                 const id = generateId(si, pi, ii);
-                const isChecked = responseStates[id] && responseStates[id].value === "yes";
-                if (isChecked) checked++;
+                const responseValue = responseStates[id] && responseStates[id].value;
+                if (responseValue === "yes") checked++;
+                if (responseValue === "no") failed = true;
             });
 
             const countEl = document.getElementById(`count_${si}_${pi}`);
             countEl.textContent = `${checked}/${numItems}`;
-            countEl.className = `principle-count${checked === numItems ? " done" : ""}`;
+            countEl.className = `principle-count${checked === numItems ? " done" : failed ? " failed" : ""}`;
 
             const card = document.getElementById(`card_${si}_${pi}`);
             if (checked === numItems) {

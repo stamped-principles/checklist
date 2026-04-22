@@ -170,7 +170,9 @@ test.describe("STAMPED Checklist App", () => {
 
     test("checking all items in a principle marks it complete", async ({ page }) => {
         const firstCard = page.locator("#card_0_0");
+        const firstCounter = page.locator("#count_0_0");
         await expect(firstCard).not.toHaveClass(/complete/);
+        await expect(firstCounter).not.toHaveClass(/done/);
 
         const yesButtons = firstCard.locator(".yes-btn");
         const count = await yesButtons.count();
@@ -179,6 +181,19 @@ test.describe("STAMPED Checklist App", () => {
         }
 
         await expect(firstCard).toHaveClass(/complete/);
+        await expect(firstCounter).toHaveClass(/done/);
+        await expect(firstCounter).not.toHaveClass(/failed/);
+    });
+
+    test("answering no marks the principle counter failed", async ({ page }) => {
+        const firstCounter = page.locator("#count_0_0");
+        await expect(firstCounter).not.toHaveClass(/done/);
+        await expect(firstCounter).not.toHaveClass(/failed/);
+
+        await page.locator(".no-btn").first().click();
+
+        await expect(firstCounter).toHaveClass(/failed/);
+        await expect(firstCounter).not.toHaveClass(/done/);
     });
 
     test("progress bar percentage updates after checking items", async ({ page }) => {

@@ -164,6 +164,31 @@ describe("buildChecklist and state management", () => {
         const card = document.getElementById("card_0_0");
         expect(card.classList.contains("complete")).toBe(true);
     });
+
+    it("updateAllCounts marks principle counter done only when all items are yes", () => {
+        const firstPrinciple = DATA[0].principles[0];
+        firstPrinciple.items.forEach((_, ii) => {
+            const id = script.generateId(0, 0, ii);
+            script.handleResponse(id, "yes");
+        });
+
+        script.updateAllCounts();
+
+        const countEl = document.getElementById("count_0_0");
+        expect(countEl.classList.contains("done")).toBe(true);
+        expect(countEl.classList.contains("failed")).toBe(false);
+    });
+
+    it("updateAllCounts marks principle counter failed when any item is no", () => {
+        const id = script.generateId(0, 0, 0);
+        script.handleResponse(id, "no");
+
+        script.updateAllCounts();
+
+        const countEl = document.getElementById("count_0_0");
+        expect(countEl.classList.contains("failed")).toBe(true);
+        expect(countEl.classList.contains("done")).toBe(false);
+    });
 });
 
 describe("section dividers", () => {

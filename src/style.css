@@ -416,6 +416,10 @@ body {
     color: var(--check-color);
 }
 
+.principle-count.failed {
+    color: var(--must-color);
+}
+
 .checklist {
     padding: 0 0.9rem 0.6rem 0.9rem;
     display: block;
