@@ -7,6 +7,11 @@ import { GA_MEASUREMENT_ID } from "../../analytics.js";
 function setupDOM() {
     document.querySelectorAll('script[src*="googletagmanager.com/gtag/js?id="]').forEach((el) => el.remove());
     document.body.innerHTML = `
+        <label><input type="radio" name="cols" value="1" /></label>
+        <label><input type="radio" name="cols" value="2" /></label>
+        <label><input type="radio" name="cols" value="auto" checked /></label>
+        <label><input type="radio" name="sections" value="on" /></label>
+        <label><input type="radio" name="sections" value="off" checked /></label>
         <div id="app"></div>
         <div class="progress-bar" id="progressBar" style="width:0%"></div>
         <div id="progressText"></div>
@@ -152,6 +157,8 @@ describe("URL state encoding/decoding", () => {
 
     beforeEach(async () => {
         setupDOM();
+        localStorage.clear();
+        window.history.replaceState({}, "", "/");
         vi.resetModules();
         script = await import("../../script.js");
         script.buildChecklist();
@@ -161,9 +168,90 @@ describe("URL state encoding/decoding", () => {
         expect(typeof script.loadFromURL).toBe("function");
     });
 
+    it("first-time navigation fills URL with default view params", () => {
+        window.history.replaceState({}, "", "/");
+        document.getElementById("app").innerHTML = "";
+        script.buildChecklist();
+        expect(window.location.search).toBe("?cols=auto&sections=off");
+    });
+
     it("loadFromURL handles missing URL params gracefully", () => {
         // Should not throw when there are no URL params
         expect(() => script.loadFromURL()).not.toThrow();
+    });
+
+    it("shareURL includes selected columns and sections view params", () => {
+        const writeText = vi.fn().mockResolvedValue(undefined);
+        Object.defineProperty(navigator, "clipboard", {
+            configurable: true,
+            value: { writeText },
+        });
+
+        document.querySelector('input[name="cols"][value="2"]').checked = true;
+        document.querySelector('input[name="sections"][value="on"]').checked = true;
+        script.shareURL();
+
+        const sharedURL = new URL(writeText.mock.calls[0][0]);
+        expect(sharedURL.searchParams.get("cols")).toBe("2");
+        expect(sharedURL.searchParams.get("sections")).toBe("on");
+    });
+
+    it("loadFromURL applies view params and keeps them in URL", () => {
+        window.history.replaceState({}, "", "/?cols=1&sections=on");
+
+        script.loadFromURL();
+
+        const grid = document.querySelector(".cards-grid");
+        const app = document.getElementById("app");
+        expect(grid.classList.contains("cols-1")).toBe(true);
+        expect(app.classList.contains("flat-mode")).toBe(false);
+        expect(window.location.search).toBe("?cols=1&sections=on");
+    });
+
+    it("loadFromURL ignores invalid view params and removes them from URL", () => {
+        window.history.replaceState({}, "", "/?cols=3&sections=invalid");
+
+        expect(() => script.loadFromURL()).not.toThrow();
+        expect(window.location.search).toBe("");
+        expect(document.querySelector(".cards-grid").classList.contains("cols-auto")).toBe(true);
+        expect(document.getElementById("app").classList.contains("flat-mode")).toBe(true);
+    });
+
+    it("loadFromURL view params override and persist over prior localStorage preferences", () => {
+        localStorage.setItem("stamped_cols", "auto");
+        localStorage.setItem("stamped_sections", "off");
+        window.history.replaceState({}, "", "/?cols=2&sections=on");
+
+        script.loadFromURL();
+
+        expect(localStorage.getItem("stamped_cols")).toBe("2");
+        expect(localStorage.getItem("stamped_sections")).toBe("on");
+        expect(document.querySelector(".cards-grid").classList.contains("cols-2")).toBe(true);
+        expect(document.getElementById("app").classList.contains("flat-mode")).toBe(false);
+    });
+
+    it("defaults columns to auto when URL has no cols param and still loads sections preference", () => {
+        localStorage.setItem("stamped_cols", "2");
+        localStorage.setItem("stamped_sections", "on");
+        window.history.replaceState({}, "", "/");
+
+        script.loadFromURL();
+        script.loadColumnPreference();
+        script.loadSectionsPreference();
+
+        expect(document.querySelector(".cards-grid").classList.contains("cols-auto")).toBe(true);
+        expect(document.getElementById("app").classList.contains("flat-mode")).toBe(false);
+        expect(document.querySelector('input[name="sections"]:checked')?.value).toBe("on");
+    });
+
+    it("applies columns from URL when cols param is present", () => {
+        localStorage.setItem("stamped_cols", "1");
+        window.history.replaceState({}, "", "/?cols=2");
+
+        script.loadColumnPreference();
+
+        expect(document.querySelector(".cards-grid").classList.contains("cols-2")).toBe(true);
+        expect(document.querySelector(".cards-grid").classList.contains("cols-1")).toBe(false);
     });
 });
 
@@ -275,6 +363,8 @@ describe("theme toggle", () => {
 describe("setColumns", () => {
     beforeEach(async () => {
         setupDOM();
+        window.history.replaceState({}, "", "/");
+        localStorage.clear();
         // Add cards-grid to DOM for setColumns to operate on
         document.getElementById("app").innerHTML = `<div class="cards-grid cols-auto"></div>`;
         vi.resetModules();
@@ -296,11 +386,19 @@ describe("setColumns", () => {
         expect(grid.classList.contains("cols-auto")).toBe(true);
         expect(grid.classList.contains("cols-2")).toBe(false);
     });
+
+    it("updates URL in real time when columns change", async () => {
+        const { setColumns } = await import("../../script.js");
+        setColumns(2);
+        expect(window.location.search).toBe("?cols=2");
+    });
 });
 
 describe("setSections", () => {
     beforeEach(async () => {
         setupDOM();
+        window.history.replaceState({}, "", "/");
+        localStorage.clear();
         vi.resetModules();
     });
 
@@ -317,5 +415,19 @@ describe("setSections", () => {
         setSections("on");
         const container = document.getElementById("app");
         expect(container.classList.contains("flat-mode")).toBe(false);
+    });
+
+    it("updates URL in real time when sections change", async () => {
+        const { setSections } = await import("../../script.js");
+        setSections("on");
+        expect(window.location.search).toBe("?sections=on");
+    });
+
+    it("preserves both cols and sections params in URL when both settings are applied", async () => {
+        const { setColumns, setSections } = await import("../../script.js");
+        document.getElementById("app").innerHTML = `<div class="cards-grid cols-auto"></div>`;
+        setColumns(1);
+        setSections("on");
+        expect(window.location.search).toBe("?cols=1&sections=on");
     });
 });

@@ -7,6 +7,8 @@ const COOKIE_CONSENT_KEY = "stamped_cookie_consent";
 const COOKIE_CONSENT_ACCEPTED = "accepted";
 const COOKIE_CONSENT_DECLINED = "declined";
 const THEME_KEY = "stamped_theme";
+const VALID_COLUMN_VALUES = new Set(["1", "2", "auto"]);
+const VALID_SECTION_VALUES = new Set(["on", "off"]);
 let analyticsInitialized = false;
 
 function escapeHtml(text) {
@@ -32,7 +34,36 @@ function renderInlineMarkdown(text) {
         .join("");
 }
 
-function setColumns(value) {
+// Keep URL view params (cols/sections) in sync with current toolbar selections.
+// This reads saved values from localStorage so both toggles remain represented in the URL,
+// while dropping one-time share-import params (state/responses) during interactive changes.
+function syncViewConfigURL() {
+    const params = new URLSearchParams(window.location.search);
+    const savedColumns = localStorage.getItem("stamped_cols");
+    const savedSections = localStorage.getItem("stamped_sections");
+
+    if (savedColumns && VALID_COLUMN_VALUES.has(savedColumns)) {
+        params.set("cols", savedColumns);
+    } else {
+        params.delete("cols");
+    }
+
+    if (savedSections && VALID_SECTION_VALUES.has(savedSections)) {
+        params.set("sections", savedSections);
+    } else {
+        params.delete("sections");
+    }
+
+    // These share-state params are intentionally one-time import params and should not persist
+    // when users are interactively changing view-only toolbar settings.
+    params.delete("state");
+    params.delete("responses");
+
+    const nextURL = params.toString() ? `${window.location.pathname}?${params.toString()}` : window.location.pathname;
+    window.history.replaceState({}, "", nextURL);
+}
+
+function setColumns(value, shouldSyncURL = true) {
     const grids = document.querySelectorAll(".cards-grid");
     grids.forEach((g) => {
         g.classList.remove("cols-1", "cols-2", "cols-auto");
@@ -40,19 +71,21 @@ function setColumns(value) {
     });
     try {
         localStorage.setItem("stamped_cols", String(value));
+        if (shouldSyncURL) syncViewConfigURL();
     } catch (e) {}
 }
 
 function loadColumnPreference() {
-    const saved = localStorage.getItem("stamped_cols") || "auto";
-    const radio = document.querySelector(`input[name="cols"][value="${saved}"]`);
+    const urlColumns = new URLSearchParams(window.location.search).get("cols");
+    const columns = urlColumns && VALID_COLUMN_VALUES.has(urlColumns) ? urlColumns : "auto";
+    const radio = document.querySelector(`input[name="cols"][value="${columns}"]`);
     if (radio) {
         radio.checked = true;
-        setColumns(saved);
+        setColumns(columns, false);
     }
 }
 
-function setSections(value) {
+function setSections(value, shouldSyncURL = true) {
     const container = document.getElementById("app");
     if (value === "off") {
         container.classList.add("flat-mode");
@@ -61,6 +94,7 @@ function setSections(value) {
     }
     try {
         localStorage.setItem("stamped_sections", String(value));
+        if (shouldSyncURL) syncViewConfigURL();
     } catch (e) {}
 }
 
@@ -69,7 +103,7 @@ function loadSectionsPreference() {
     const radio = document.querySelector(`input[name="sections"][value="${saved}"]`);
     if (radio) {
         radio.checked = true;
-        setSections(saved);
+        setSections(saved, false);
     }
 }
 
@@ -217,6 +251,7 @@ function buildChecklist() {
     loadColumnPreference();
     loadSectionsPreference();
     loadModePreference();
+    syncViewConfigURL();
 }
 
 function handleResponse(id, value) {
@@ -363,6 +398,8 @@ function autoSave() {
 
 // URL Sharing
 function shareURL() {
+    const params = new URLSearchParams();
+
     // Encode yes-response states as a compact bitstring (backward-compatible format)
     const state = getState();
     const bits = [];
@@ -375,7 +412,7 @@ function shareURL() {
         });
     });
     const encoded = btoa(bits.join(""));
-    let url = window.location.origin + window.location.pathname + "?state=" + encodeURIComponent(encoded);
+    params.set("state", encoded);
 
     // Encode non-empty response states (value + reason) as base64 JSON
     const nonEmptyResponses = {};
@@ -385,8 +422,20 @@ function shareURL() {
         }
     });
     if (Object.keys(nonEmptyResponses).length > 0) {
-        url += "&responses=" + encodeURIComponent(btoa(JSON.stringify(nonEmptyResponses)));
+        params.set("responses", btoa(JSON.stringify(nonEmptyResponses)));
     }
+
+    const selectedColumns = document.querySelector('input[name="cols"]:checked')?.value;
+    if (selectedColumns && VALID_COLUMN_VALUES.has(selectedColumns)) {
+        params.set("cols", selectedColumns);
+    }
+
+    const selectedSections = document.querySelector('input[name="sections"]:checked')?.value;
+    if (selectedSections && VALID_SECTION_VALUES.has(selectedSections)) {
+        params.set("sections", selectedSections);
+    }
+
+    const url = window.location.origin + window.location.pathname + "?" + params.toString();
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
         navigator.clipboard
@@ -406,12 +455,21 @@ function showPromptURL(url) {
     prompt("Copy this shareable URL:", url);
 }
 
+function checkRadioByValue(name, value) {
+    const radio = Array.from(document.querySelectorAll(`input[name="${name}"]`)).find((input) => input.value === value);
+    if (radio) radio.checked = true;
+}
+
 function loadFromURL() {
     const params = new URLSearchParams(window.location.search);
     const stateParam = params.get("state");
     const responsesParam = params.get("responses");
+    const colsParam = params.get("cols");
+    const sectionsParam = params.get("sections");
+    const validColsParam = colsParam && VALID_COLUMN_VALUES.has(colsParam) ? colsParam : null;
+    const validSectionsParam = sectionsParam && VALID_SECTION_VALUES.has(sectionsParam) ? sectionsParam : null;
 
-    if (!stateParam && !responsesParam) return;
+    if (!stateParam && !responsesParam && !colsParam && !sectionsParam) return;
 
     if (stateParam) {
         try {
@@ -448,8 +506,28 @@ function loadFromURL() {
         }
     }
 
-    // Clean URL
-    window.history.replaceState({}, "", window.location.pathname);
+    if (validColsParam) {
+        checkRadioByValue("cols", validColsParam);
+        setColumns(validColsParam, false);
+    }
+
+    if (validSectionsParam) {
+        checkRadioByValue("sections", validSectionsParam);
+        setSections(validSectionsParam, false);
+    }
+
+    // Clean stateful URL params while keeping view-configuration params.
+    const cleanParams = new URLSearchParams();
+    if (validColsParam) {
+        cleanParams.set("cols", validColsParam);
+    }
+    if (validSectionsParam) {
+        cleanParams.set("sections", validSectionsParam);
+    }
+    const cleanURL = cleanParams.toString()
+        ? `${window.location.pathname}?${cleanParams.toString()}`
+        : window.location.pathname;
+    window.history.replaceState({}, "", cleanURL);
 }
 
 // Reset
