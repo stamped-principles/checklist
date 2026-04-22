@@ -3,8 +3,7 @@ import { withTheme } from "./utils.js";
 function buildMainPageLayout({
     progressState = "incomplete",
     progressWidth = "0%",
-    progressLabel = "0 / 0 items",
-    modeLabel = "meeting requirements",
+    progressText = "0 / 0 items meeting requirements (0%)",
 } = {}) {
     const root = document.createElement("div");
     root.innerHTML = `
@@ -31,7 +30,7 @@ function buildMainPageLayout({
             <div class="progress-bar-container">
                 <div class="progress-bar ${progressState}" id="progressBar" style="width:${progressWidth}"></div>
             </div>
-            <div class="progress-text ${progressState}" id="progressText">${progressLabel} ${modeLabel}</div>
+            <div class="progress-text ${progressState}" id="progressText">${progressText}</div>
         </div>
         <div class="toolbar">
             <button type="button"><span class="icon">🖨️</span> Print</button>
@@ -94,12 +93,22 @@ export const Default = {
 
 export const Passing = {
     name: "Main page layout (passing)",
-    render: () => buildMainPageLayout({ progressState: "done", progressWidth: "100%", progressLabel: "3 / 3 items" }),
+    render: () =>
+        buildMainPageLayout({
+            progressState: "done",
+            progressWidth: "100%",
+            progressText: "3 / 3 items meeting requirements (100%)",
+        }),
 };
 
 export const Failed = {
     name: "Main page layout (failed)",
-    render: () => buildMainPageLayout({ progressState: "failed", progressWidth: "67%", progressLabel: "2 / 3 items" }),
+    render: () =>
+        buildMainPageLayout({
+            progressState: "failed",
+            progressWidth: "67%",
+            progressText: "2 / 3 items meeting requirements (67%)",
+        }),
 };
 
 export const DefaultDark = {
