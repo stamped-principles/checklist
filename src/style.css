@@ -337,8 +337,21 @@ body {
 .principle-header {
     padding: 0.6rem 0.9rem;
     display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+}
+
+.principle-header-main {
+    display: flex;
     align-items: flex-start;
     gap: 0.5rem;
+    width: 100%;
+}
+
+.principle-heading {
+    flex: 1;
+    min-width: 0;
 }
 
 .principle-code {
@@ -373,6 +386,11 @@ body {
     display: flex;
     align-items: center;
     gap: 0.35rem;
+}
+
+.principle-description {
+    font-size: 0.76rem;
+    color: var(--text-light);
 }
 
 .principle-examples-link {

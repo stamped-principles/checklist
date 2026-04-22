@@ -64,6 +64,17 @@ describe("buildChecklist and state management", () => {
         expect(firstLink.textContent).toBe("💡");
     });
 
+    it("renders principle descriptions as full-width rows under the header main row", () => {
+        const header = document.querySelector("#card_0_0 .principle-header");
+        const headerMain = header.querySelector(".principle-header-main");
+        const description = header.querySelector(".principle-description");
+
+        expect(headerMain).not.toBeNull();
+        expect(description).not.toBeNull();
+        expect(description.parentElement).toBe(header);
+        expect(description.textContent.trim().length).toBeGreaterThan(0);
+    });
+
     it("builds correct number of check items", () => {
         const items = document.querySelectorAll(".check-item");
         const totalItems = DATA.flatMap((s) => s.principles).flatMap((p) => p.items).length;
