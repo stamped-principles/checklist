@@ -35,7 +35,7 @@ jobs:
                   preview-branch: gh-pages
                   comment: false
             - name: Comment with deployment preview link
-              if: ${{ success() && steps.deploy_preview.outputs.deployment-action == 'deploy' && steps.deploy_preview.outputs.preview-url != '' }}
+              if: success() && steps.deploy_preview.outputs.deployment-action == 'deploy' && steps.deploy_preview.outputs.preview-url != ''
               uses: actions/github-script@v7
               with:
                   script: |
