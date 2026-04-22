@@ -6,10 +6,10 @@ import { DATA } from "../../checklist.js";
 import { GA_MEASUREMENT_ID } from "../../analytics.js";
 
 const TOTAL_PRINCIPLES = DATA.flatMap((s) => s.principles).length;
-const IS_COVERAGE_ENABLED = process.env.PW_COVERAGE === "1";
+const COVERAGE_ENABLED = process.env.PW_COVERAGE === "1";
 const COVERAGE_RAW_OUTPUT_DIR = resolve(process.cwd(), "coverage", "integration", "raw");
 
-const test = IS_COVERAGE_ENABLED
+const test = COVERAGE_ENABLED
     ? base.extend({
           page: async ({ page }, use, testInfo) => {
               if (typeof page.coverage?.startJSCoverage !== "function") {

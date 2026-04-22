@@ -41,7 +41,7 @@ for (const fileName of fileNames) {
         if (!sourcePath || typeof entry.source !== "string") continue;
 
         const converted = await convert({
-            ast: parseAstAsync(entry.source),
+            ast: await parseAstAsync(entry.source),
             code: entry.source,
             wrapperLength: 0,
             coverage: {
@@ -55,7 +55,9 @@ for (const fileName of fileNames) {
 }
 
 if (coverageMap.files().length === 0) {
-    throw new Error("No Playwright integration coverage data was collected.");
+    throw new Error(
+        "No Playwright integration coverage data was collected. Ensure PW_COVERAGE=1 is set and integration tests completed successfully."
+    );
 }
 
 await mkdir(OUTPUT_DIR, { recursive: true });
