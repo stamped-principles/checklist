@@ -16,6 +16,13 @@ function buildReasonInput(value = "") {
         <div class="reason-counter visible">${reasonText.length}/250</div>
     `;
 
+    const textarea = container.querySelector(".reason-input");
+    const counter = container.querySelector(".reason-counter");
+    if (textarea && counter) {
+        textarea.addEventListener("input", () => {
+            counter.textContent = `${textarea.value.length}/250`;
+        });
+    }
     return container;
 }
 
