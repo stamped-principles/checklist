@@ -268,6 +268,21 @@ test.describe("STAMPED Checklist App", () => {
         await expect(reasonCounter).toHaveText("3/250");
     });
 
+    test("reason textarea retains value when switching no to yes and back", async ({ page }) => {
+        const noButton = page.locator(".no-btn").first();
+        const yesButton = page.locator(".yes-btn").first();
+        const reasonInput = page.locator(".reason-input").first();
+        const reasonCounter = page.locator(".reason-counter").first();
+
+        await noButton.click();
+        await reasonInput.fill("abc");
+        await yesButton.click();
+        await noButton.click();
+
+        await expect(reasonInput).toHaveValue("abc");
+        await expect(reasonCounter).toHaveText("3/250");
+    });
+
     // Use a fresh browser context (not affected by addInitScript) to verify
     // that autoSave persists state across page loads.
     test("state persists in localStorage after answering yes", async ({ browser }) => {
