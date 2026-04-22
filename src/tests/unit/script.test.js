@@ -114,12 +114,14 @@ describe("buildChecklist and state management", () => {
 
     it("loadFromLocalStorage does not migrate legacy checkbox payloads", () => {
         const id = script.generateId(0, 0, 0);
-        localStorage.setItem("stamped_checklist", JSON.stringify({ checkboxes: { [id]: true } }));
+        const legacyPayload = JSON.stringify({ checkboxes: { [id]: true } });
+        localStorage.setItem("stamped_checklist", legacyPayload);
 
         script.loadFromLocalStorage();
 
         expect(script.getState()[id]).toBe(false);
         expect(document.getElementById(`yes_${id}`).classList.contains("active")).toBe(false);
+        expect(localStorage.getItem("stamped_checklist")).toBe(legacyPayload);
     });
 
     it("updateAllCounts reflects yes responses", () => {

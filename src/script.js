@@ -35,6 +35,8 @@ function renderInlineMarkdown(text) {
 }
 
 function getEncodedStateBits() {
+    // Encode each checklist item to one bit in DATA traversal order:
+    // sections -> principles -> items, where getState() true => 1 and false => 0.
     const state = getState();
     const bits = [];
     DATA.forEach((section, si) => {
@@ -259,6 +261,7 @@ function buildChecklist() {
     container.appendChild(cardsGrid);
 
     loadFromURL();
+    // URL state is authoritative when present; localStorage only hydrates when URL has no encoded state.
     if (!new URLSearchParams(window.location.search).has("state")) {
         loadFromLocalStorage();
     }
