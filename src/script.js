@@ -219,23 +219,25 @@ function buildChecklist() {
             const header = document.createElement("div");
             header.className = "principle-header";
             header.innerHTML = `
-        <span class="level-badge ${section.level}">${section.label}</span>
-        <span class="principle-code">${principle.code}</span>
-        <div style="flex:1">
-          <div class="principle-title-row">
-            <div class="principle-title">${principleName}</div>
-            <a
-              class="principle-examples-link"
-              href="${examplesURL}"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="View ${principleName} examples"
-              title="View examples for ${principleName}"
-            >💡</a>
+        <div class="principle-header-main">
+          <span class="level-badge ${section.level}">${section.label}</span>
+          <span class="principle-code">${principle.code}</span>
+          <div class="principle-heading">
+            <div class="principle-title-row">
+              <div class="principle-title">${principleName}</div>
+              <a
+                class="principle-examples-link"
+                href="${examplesURL}"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="View ${principleName} examples"
+                title="View examples for ${principleName}"
+              >💡</a>
+            </div>
           </div>
-          <div style="font-size:0.76rem; color:var(--text-light); margin-top:0.1rem;">${principleDescription}</div>
+          <span class="principle-count" id="count_${si}_${pi}">0/${numItems}</span>
         </div>
-        <span class="principle-count" id="count_${si}_${pi}">0/${numItems}</span>
+        <div class="principle-description">${principleDescription}</div>
       `;
             card.appendChild(header);
 
