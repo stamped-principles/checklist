@@ -26,6 +26,19 @@ test.describe("STAMPED Checklist App", () => {
         await expect(page.locator("h1")).toContainText("STAMPED Compliance Checklist");
     });
 
+    test("main page layout renders core controls and content", async ({ page }) => {
+        await expect(page.locator("#theme-toggle")).toBeVisible();
+        await expect(page.locator(".header-actions .github-link")).toBeVisible();
+        await expect(page.locator(".toolbar").getByRole("button", { name: "Print" })).toBeVisible();
+        await expect(page.locator(".toolbar").getByRole("button", { name: "Reset" })).toBeVisible();
+        await expect(page.locator(".col-toggle-label").filter({ hasText: "Columns:" })).toBeVisible();
+        await expect(page.locator(".col-toggle-label").filter({ hasText: "Sections:" })).toBeVisible();
+        await expect(page.locator("#progressBar")).toHaveCount(1);
+        await expect(page.locator("#progressText")).toContainText("0 /");
+        await expect(page.locator("#app .intro-text")).toContainText("This checklist helps you assess compliance");
+        await expect(page.locator(".legend .legend-item")).toHaveCount(3);
+    });
+
     test("header includes GitHub nav icon link to this repository", async ({ page }) => {
         const githubLink = page.locator(".header-actions .github-link");
         await expect(githubLink).toBeVisible();
