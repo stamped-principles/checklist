@@ -252,6 +252,34 @@ describe("URL state encoding/decoding", () => {
         expect(decodedResponses[id]).toEqual({ value: "no", reason: "Missing provenance metadata" });
     });
 
+    it("all no responses with reasons are encoded and produce a long URL", () => {
+        const reasonText = "Example reason text for this requirement.";
+
+        DATA.forEach((section, si) => {
+            section.principles.forEach((principle, pi) => {
+                principle.items.forEach((_, ii) => {
+                    const id = script.generateId(si, pi, ii);
+                    script.handleResponse(id, "no");
+                    script.handleReason(id, reasonText);
+                });
+            });
+        });
+
+        const params = new URLSearchParams(window.location.search);
+        const encodedResponses = params.get("responses");
+        expect(encodedResponses).not.toBeNull();
+
+        const decodedResponses = JSON.parse(atob(encodedResponses));
+        const totalItems = DATA.flatMap((s) => s.principles).flatMap((p) => p.items).length;
+        expect(Object.keys(decodedResponses)).toHaveLength(totalItems);
+        Object.values(decodedResponses).forEach((response) => {
+            expect(response).toEqual({ value: "no", reason: reasonText });
+        });
+
+        const resultingURLLength = window.location.href.length;
+        expect(resultingURLLength).toBeGreaterThan(2000);
+    });
+
     it("defaults columns to auto when URL has no cols param and still loads sections preference", () => {
         localStorage.setItem("stamped_cols", "2");
         localStorage.setItem("stamped_sections", "on");
