@@ -345,10 +345,32 @@ function applyResponseState(id) {
     }
 }
 
+function ensureProgressSegments(progressBar) {
+    const segmentDefinitions = [
+        ["passing", "pass"],
+        ["failing", "fail"],
+        ["incomplete", "incomplete"],
+    ];
+    const segments = {};
+
+    segmentDefinitions.forEach(([key, className]) => {
+        let segment = progressBar.querySelector(`[data-progress-segment="${key}"]`);
+        if (!segment) {
+            segment = document.createElement("div");
+            segment.className = `progress-segment ${className}`;
+            segment.setAttribute("data-progress-segment", key);
+            progressBar.appendChild(segment);
+        }
+        segments[key] = segment;
+    });
+
+    return segments;
+}
+
 function updateAllCounts() {
-    let totalChecked = 0;
+    let totalPassing = 0;
+    let totalFailing = 0;
     let total = 0;
-    let hasFailed = false;
 
     DATA.forEach((section, si) => {
         let sectionChecked = 0;
@@ -362,10 +384,13 @@ function updateAllCounts() {
             principle.items.forEach((_, ii) => {
                 const id = generateId(si, pi, ii);
                 const responseValue = responseStates[id] && responseStates[id].value;
-                if (responseValue === "yes") checked++;
+                if (responseValue === "yes") {
+                    checked++;
+                    totalPassing++;
+                }
                 if (responseValue === "no") {
                     failed = true;
-                    hasFailed = true;
+                    totalFailing++;
                 }
             });
 
@@ -382,7 +407,6 @@ function updateAllCounts() {
 
             sectionChecked += checked;
             sectionTotal += numItems;
-            totalChecked += checked;
             total += numItems;
         });
 
@@ -390,20 +414,22 @@ function updateAllCounts() {
         sp.textContent = `${sectionChecked}/${sectionTotal}`;
     });
 
-    const pct = total > 0 ? Math.round((totalChecked / total) * 100) : 0;
+    const totalIncomplete = Math.max(total - totalPassing - totalFailing, 0);
+    const passingPct = total > 0 ? (totalPassing / total) * 100 : 0;
+    const failingPct = total > 0 ? (totalFailing / total) * 100 : 0;
+    const incompletePct = total > 0 ? (totalIncomplete / total) * 100 : 0;
     const progressBar = document.getElementById("progressBar");
-    const isDone = total > 0 && totalChecked === total;
-    const progressStateClass = isDone ? "done" : hasFailed ? "failed" : "incomplete";
+    const progressSegments = ensureProgressSegments(progressBar);
+    progressSegments.passing.style.width = `${passingPct}%`;
+    progressSegments.failing.style.width = `${failingPct}%`;
+    progressSegments.incomplete.style.width = `${incompletePct}%`;
 
-    progressBar.style.width = pct + "%";
-    progressBar.classList.remove("done", "failed", "incomplete");
-    progressBar.classList.add(progressStateClass);
-
-    const modeLabel = "meeting requirements";
     const progressText = document.getElementById("progressText");
-    progressText.textContent = `${totalChecked} / ${total} items ${modeLabel} (${pct}%)`;
-    progressText.classList.remove("done", "failed", "incomplete");
-    progressText.classList.add(progressStateClass);
+    progressText.innerHTML = `<span class="progress-value pass">${totalPassing}</span> / <span class="progress-value fail">${totalFailing}</span> / <span class="progress-value incomplete">${totalIncomplete}</span>`;
+    progressText.setAttribute(
+        "aria-label",
+        `${totalPassing} passing, ${totalFailing} failing, ${totalIncomplete} incomplete`
+    );
 }
 
 function getState() {

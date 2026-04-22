@@ -153,13 +153,15 @@ test.describe("STAMPED Checklist App", () => {
         await expect(codeSpans.filter({ hasText: "git" }).first()).toBeVisible();
     });
 
-    test("initial progress shows 0 items checked", async ({ page }) => {
-        const progressBar = page.locator("#progressBar");
-        const progressText = page.locator("#progressText");
-        await expect(progressText).toContainText("0 /");
-        await expect(progressText).toContainText("(0%)");
-        await expect(progressBar).toHaveClass(/incomplete/);
-        await expect(progressText).toHaveClass(/incomplete/);
+    test("initial progress shows all items as incomplete", async ({ page }) => {
+        const passingSegment = page.locator('#progressBar [data-progress-segment="passing"]');
+        const failingSegment = page.locator('#progressBar [data-progress-segment="failing"]');
+        const incompleteSegment = page.locator('#progressBar [data-progress-segment="incomplete"]');
+        await expect(passingSegment).toHaveCSS("width", "0px");
+        await expect(failingSegment).toHaveCSS("width", "0px");
+        await expect(incompleteSegment).not.toHaveCSS("width", "0px");
+        await expect(page.locator("#progressText .progress-value.pass")).toHaveText("0");
+        await expect(page.locator("#progressText .progress-value.fail")).toHaveText("0");
     });
 
     test("answering yes updates the principle counter", async ({ page }) => {
@@ -199,21 +201,28 @@ test.describe("STAMPED Checklist App", () => {
         await expect(firstCounter).not.toHaveClass(/done/);
     });
 
-    test("progress bar percentage updates after checking items", async ({ page }) => {
+    test("answering yes adds proportional passing fill", async ({ page }) => {
         await answerYes(page, page.locator(".yes-btn").first());
-        await expect(page.locator("#progressText")).not.toContainText("(0%)");
-        await expect(page.locator("#progressBar")).toHaveClass(/incomplete/);
-        await expect(page.locator("#progressText")).toHaveClass(/incomplete/);
+        await expect(page.locator('#progressBar [data-progress-segment="passing"]')).not.toHaveCSS("width", "0px");
+        await expect(page.locator('#progressBar [data-progress-segment="failing"]')).toHaveCSS("width", "0px");
+        await expect(page.locator("#progressText .progress-value.pass")).toHaveText("1");
     });
 
-    test("answering no marks top progress as failed", async ({ page }) => {
-        await page.locator(".no-btn").first().click();
-        await expect(page.locator("#progressBar")).toHaveClass(/failed/);
-        await expect(page.locator("#progressBar")).not.toHaveClass(/done/);
-        await expect(page.locator("#progressText")).toHaveClass(/failed/);
+    test("answering no adds proportional failing fill after any passing fill", async ({ page }) => {
+        await answerYes(page, page.locator(".yes-btn").first());
+        await page.locator(".no-btn").nth(1).click();
+
+        const segmentOrder = await page
+            .locator("#progressBar .progress-segment")
+            .evaluateAll((segments) => segments.map((segment) => segment.getAttribute("data-progress-segment")));
+        expect(segmentOrder).toEqual(["passing", "failing", "incomplete"]);
+        await expect(page.locator('#progressBar [data-progress-segment="passing"]')).not.toHaveCSS("width", "0px");
+        await expect(page.locator('#progressBar [data-progress-segment="failing"]')).not.toHaveCSS("width", "0px");
+        await expect(page.locator("#progressText .progress-value.pass")).toHaveText("1");
+        await expect(page.locator("#progressText .progress-value.fail")).toHaveText("1");
     });
 
-    test("answering yes on every item marks top progress as done", async ({ page }) => {
+    test("answering yes on every item fills progress with passing only", async ({ page }) => {
         const yesButtons = page.locator(".yes-btn");
         const count = await yesButtons.count();
 
@@ -221,9 +230,11 @@ test.describe("STAMPED Checklist App", () => {
             await answerYes(page, yesButtons.nth(i));
         }
 
-        await expect(page.locator("#progressBar")).toHaveClass(/done/);
-        await expect(page.locator("#progressBar")).not.toHaveClass(/failed/);
-        await expect(page.locator("#progressText")).toHaveClass(/done/);
+        await expect(page.locator('#progressBar [data-progress-segment="passing"]')).not.toHaveCSS("width", "0px");
+        await expect(page.locator('#progressBar [data-progress-segment="failing"]')).toHaveCSS("width", "0px");
+        await expect(page.locator('#progressBar [data-progress-segment="incomplete"]')).toHaveCSS("width", "0px");
+        await expect(page.locator("#progressText .progress-value.fail")).toHaveText("0");
+        await expect(page.locator("#progressText .progress-value.incomplete")).toHaveText("0");
     });
 
     test("toolbar does not render a Share URL button", async ({ page }) => {

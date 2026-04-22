@@ -1,9 +1,12 @@
 import { withTheme } from "./utils.js";
 
 function buildMainPageLayout({
-    progressState = "incomplete",
-    progressWidth = "0%",
-    progressText = "0 / 0 items meeting requirements (0%)",
+    passingWidth = "0%",
+    failingWidth = "0%",
+    incompleteWidth = "100%",
+    passingCount = 0,
+    failingCount = 0,
+    incompleteCount = 0,
 } = {}) {
     const root = document.createElement("div");
     root.innerHTML = `
@@ -28,9 +31,17 @@ function buildMainPageLayout({
             <h1>📋 STAMPED Compliance Checklist</h1>
             <p>Assess your research objects against the STAMPED principles</p>
             <div class="progress-bar-container">
-                <div class="progress-bar ${progressState}" id="progressBar" style="width:${progressWidth}"></div>
+                <div class="progress-bar" id="progressBar">
+                    <div class="progress-segment pass" data-progress-segment="passing" style="width:${passingWidth}"></div>
+                    <div class="progress-segment fail" data-progress-segment="failing" style="width:${failingWidth}"></div>
+                    <div class="progress-segment incomplete" data-progress-segment="incomplete" style="width:${incompleteWidth}"></div>
+                </div>
             </div>
-            <div class="progress-text ${progressState}" id="progressText">${progressText}</div>
+            <div class="progress-text" id="progressText">
+                <span class="progress-value pass">${passingCount}</span> /
+                <span class="progress-value fail">${failingCount}</span> /
+                <span class="progress-value incomplete">${incompleteCount}</span>
+            </div>
         </div>
         <div class="toolbar">
             <button type="button"><span class="icon">🖨️</span> Print</button>
@@ -95,9 +106,12 @@ export const Passing = {
     name: "Main page layout (passing)",
     render: () =>
         buildMainPageLayout({
-            progressState: "done",
-            progressWidth: "100%",
-            progressText: "3 / 3 items meeting requirements (100%)",
+            passingWidth: "100%",
+            failingWidth: "0%",
+            incompleteWidth: "0%",
+            passingCount: 3,
+            failingCount: 0,
+            incompleteCount: 0,
         }),
 };
 
@@ -105,9 +119,12 @@ export const Failed = {
     name: "Main page layout (failed)",
     render: () =>
         buildMainPageLayout({
-            progressState: "failed",
-            progressWidth: "67%",
-            progressText: "2 / 3 items meeting requirements (67%)",
+            passingWidth: "34%",
+            failingWidth: "33%",
+            incompleteWidth: "33%",
+            passingCount: 1,
+            failingCount: 1,
+            incompleteCount: 1,
         }),
 };
 

@@ -13,8 +13,15 @@ function setupDOM() {
         <label><input type="radio" name="sections" value="on" /></label>
         <label><input type="radio" name="sections" value="off" checked /></label>
         <div id="app"></div>
-        <div class="progress-bar" id="progressBar" style="width:0%"></div>
-        <div id="progressText"></div>
+        <div class="progress-bar" id="progressBar">
+            <div class="progress-segment pass" data-progress-segment="passing" style="width:0%"></div>
+            <div class="progress-segment fail" data-progress-segment="failing" style="width:0%"></div>
+            <div class="progress-segment incomplete" data-progress-segment="incomplete" style="width:100%"></div>
+        </div>
+        <div class="progress-text" id="progressText">
+            <span class="progress-value pass">0</span> / <span class="progress-value fail">0</span> /
+            <span class="progress-value incomplete">0</span>
+        </div>
         <div id="toast"></div>
         <div id="cookie-consent-banner" class="cookie-consent-banner hidden"></div>
         <button id="cookie-consent-decline" type="button">Decline</button>
@@ -154,17 +161,22 @@ describe("buildChecklist and state management", () => {
         expect(checked).toBe(1);
     });
 
-    it("updateAllCounts keeps top progress incomplete when checklist is not fully answered", () => {
+    it("updateAllCounts shows pass/fail/incomplete top progress segments and counts", () => {
         const id = script.generateId(0, 0, 0);
         script.handleResponse(id, "yes");
         script.updateAllCounts();
 
-        const progressBar = document.getElementById("progressBar");
+        const totalItems = DATA.flatMap((section) => section.principles).flatMap((principle) => principle.items).length;
+        const passingSegment = document.querySelector('[data-progress-segment="passing"]');
+        const failingSegment = document.querySelector('[data-progress-segment="failing"]');
+        const incompleteSegment = document.querySelector('[data-progress-segment="incomplete"]');
         const progressText = document.getElementById("progressText");
-        expect(progressBar.classList.contains("incomplete")).toBe(true);
-        expect(progressBar.classList.contains("done")).toBe(false);
-        expect(progressBar.classList.contains("failed")).toBe(false);
-        expect(progressText.classList.contains("incomplete")).toBe(true);
+        expect(parseFloat(passingSegment.style.width)).toBeGreaterThan(0);
+        expect(failingSegment.style.width).toBe("0%");
+        expect(parseFloat(incompleteSegment.style.width)).toBeGreaterThan(0);
+        expect(progressText.querySelector(".progress-value.pass").textContent).toBe("1");
+        expect(progressText.querySelector(".progress-value.fail").textContent).toBe("0");
+        expect(progressText.querySelector(".progress-value.incomplete").textContent).toBe(String(totalItems - 1));
     });
 
     it("updateAllCounts marks card complete when all items are yes", () => {
@@ -203,7 +215,7 @@ describe("buildChecklist and state management", () => {
         expect(countEl.classList.contains("done")).toBe(false);
     });
 
-    it("updateAllCounts marks top progress done when all items are yes", () => {
+    it("updateAllCounts sets top progress to all passing when all items are yes", () => {
         DATA.forEach((section, si) => {
             section.principles.forEach((principle, pi) => {
                 principle.items.forEach((_, ii) => {
@@ -214,23 +226,31 @@ describe("buildChecklist and state management", () => {
         });
         script.updateAllCounts();
 
-        const progressBar = document.getElementById("progressBar");
         const progressText = document.getElementById("progressText");
-        expect(progressBar.classList.contains("done")).toBe(true);
-        expect(progressBar.classList.contains("failed")).toBe(false);
-        expect(progressText.classList.contains("done")).toBe(true);
+        const passingSegment = document.querySelector('[data-progress-segment="passing"]');
+        const failingSegment = document.querySelector('[data-progress-segment="failing"]');
+        const incompleteSegment = document.querySelector('[data-progress-segment="incomplete"]');
+        expect(passingSegment.style.width).toBe("100%");
+        expect(failingSegment.style.width).toBe("0%");
+        expect(incompleteSegment.style.width).toBe("0%");
+        expect(progressText.querySelector(".progress-value.fail").textContent).toBe("0");
+        expect(progressText.querySelector(".progress-value.incomplete").textContent).toBe("0");
     });
 
-    it("updateAllCounts marks top progress failed when any item is no", () => {
+    it("updateAllCounts includes failing segment and count when any item is no", () => {
         const id = script.generateId(0, 0, 0);
         script.handleResponse(id, "no");
         script.updateAllCounts();
 
-        const progressBar = document.getElementById("progressBar");
         const progressText = document.getElementById("progressText");
-        expect(progressBar.classList.contains("failed")).toBe(true);
-        expect(progressBar.classList.contains("done")).toBe(false);
-        expect(progressText.classList.contains("failed")).toBe(true);
+        const passingSegment = document.querySelector('[data-progress-segment="passing"]');
+        const failingSegment = document.querySelector('[data-progress-segment="failing"]');
+        const incompleteSegment = document.querySelector('[data-progress-segment="incomplete"]');
+        expect(passingSegment.style.width).toBe("0%");
+        expect(parseFloat(failingSegment.style.width)).toBeGreaterThan(0);
+        expect(parseFloat(incompleteSegment.style.width)).toBeGreaterThan(0);
+        expect(progressText.querySelector(".progress-value.pass").textContent).toBe("0");
+        expect(progressText.querySelector(".progress-value.fail").textContent).toBe("1");
     });
 });
 

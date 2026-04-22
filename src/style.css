@@ -99,22 +99,34 @@ body {
 }
 
 .progress-bar {
+    display: flex;
     height: 100%;
     border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-segment {
+    height: 100%;
     transition: width 0.4s ease;
-    width: 0%;
 }
 
-.progress-bar.incomplete {
-    background: var(--text-light);
-}
-
-.progress-bar.done {
+.progress-segment.pass {
     background: var(--check-color);
 }
 
-.progress-bar.failed {
+.progress-segment.fail {
     background: var(--must-color);
+}
+
+.progress-segment.incomplete {
+    background-color: var(--text-light);
+    background-image: repeating-linear-gradient(
+        45deg,
+        rgba(255, 255, 255, 0.24) 0,
+        rgba(255, 255, 255, 0.24) 6px,
+        rgba(255, 255, 255, 0.06) 6px,
+        rgba(255, 255, 255, 0.06) 12px
+    );
 }
 
 .progress-text {
@@ -122,18 +134,19 @@ body {
     margin-top: 0.25rem;
     opacity: 0.9;
     font-weight: 600;
+    color: white;
 }
 
-.progress-text.incomplete {
-    color: var(--text-light);
-}
-
-.progress-text.done {
+.progress-text .progress-value.pass {
     color: var(--check-color);
 }
 
-.progress-text.failed {
+.progress-text .progress-value.fail {
     color: var(--must-color);
+}
+
+.progress-text .progress-value.incomplete {
+    color: #cfd8dc;
 }
 
 .toolbar {
