@@ -28,7 +28,25 @@ jobs:
               run: npm run build
 
             - name: Deploy preview
+              id: deploy_preview
               uses: rossjrw/pr-preview-action@v1
               with:
                   source-dir: dist
                   preview-branch: gh-pages
+                  comment: false
+            - name: Comment with deployment preview link
+              if: ${{ success() && steps.deploy_preview.outputs.deployment-action == 'deploy' && steps.deploy_preview.outputs.preview-url != '' }}
+              uses: actions/github-script@v7
+              with:
+                  script: |
+                      const previewUrl = `${{ steps.deploy_preview.outputs.preview-url }}`;
+                      await github.rest.issues.createComment({
+                        owner: context.repo.owner,
+                        repo: context.repo.repo,
+                        issue_number: context.issue.number,
+                        body: [
+                          "## Deployment Preview",
+                          "",
+                          `Preview URL: ${previewUrl}`,
+                        ].join("\n"),
+                      });
