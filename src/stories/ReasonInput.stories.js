@@ -1,6 +1,10 @@
 import { withTheme } from "./utils.js";
 
 function buildReasonInput(value = "") {
+    const app = document.createElement("div");
+    app.id = "app";
+    app.className = "mode-responses";
+
     const container = document.createElement("div");
     container.className = "response-ui";
     container.style.maxWidth = "560px";
@@ -23,7 +27,8 @@ function buildReasonInput(value = "") {
             counter.textContent = `${textarea.value.length}/250`;
         });
     }
-    return container;
+    app.appendChild(container);
+    return app;
 }
 
 export default {
