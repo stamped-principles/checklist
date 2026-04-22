@@ -302,7 +302,8 @@ function handleResponse(id, value) {
         reasonEl.classList.toggle("visible", showReason);
         const counterEl = document.getElementById(`reason_count_${id}`);
         if (counterEl) counterEl.classList.toggle("visible", showReason);
-        if (!showReason) {
+        const isDeselectingNo = current === "no" && responseStates[id].value === null;
+        if (isDeselectingNo) {
             responseStates[id].reason = "";
             reasonEl.value = "";
             updateReasonCounter(id, "");

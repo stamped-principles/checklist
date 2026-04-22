@@ -299,6 +299,19 @@ describe("URL state encoding/decoding", () => {
         expect(reasonCounterEl.textContent).toBe("0/250");
     });
 
+    it("reason is preserved when switching no to yes and back to no", () => {
+        const id = script.generateId(0, 0, 0);
+        script.handleResponse(id, "no");
+        script.handleReason(id, "abc");
+        script.handleResponse(id, "yes");
+        script.handleResponse(id, "no");
+
+        const reasonEl = document.getElementById(`reason_${id}`);
+        const reasonCounterEl = document.getElementById(`reason_count_${id}`);
+        expect(reasonEl.value).toBe("abc");
+        expect(reasonCounterEl.textContent).toBe("3/250");
+    });
+
     it("all no responses with reasons are encoded and produce a long URL", () => {
         const reasonText = "Example reason text for this requirement.";
 
