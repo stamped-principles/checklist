@@ -62,8 +62,8 @@ test.describe("STAMPED Checklist App", () => {
         await expect(page.locator(".toolbar").getByRole("button", { name: "Reset" })).toBeVisible();
         await expect(page.locator(".col-toggle-label").filter({ hasText: "Columns:" })).toBeVisible();
         await expect(page.locator(".col-toggle-label").filter({ hasText: "Sections:" })).toBeVisible();
-        await expect(page.locator("#progressBar")).toHaveCount(1);
-        await expect(page.locator("#progressText")).toContainText("0 /");
+        await expect(page.locator('#levelStats [data-level-stat="total"]')).toHaveCount(1);
+        await expect(page.locator('#levelStats [data-level-stat="total"] .level-stat-counts .pass')).toHaveText("0✓");
         await expect(page.locator("#app .intro-text")).toContainText("This checklist helps you assess compliance");
         await expect(page.locator(".legend .legend-item")).toHaveCount(3);
     });
