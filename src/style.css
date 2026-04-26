@@ -149,6 +149,7 @@ body {
 
 .level-stat-row[data-level-stat="total"] .level-stat-counts {
     font-size: 1.08rem;
+    min-width: 11.25rem;
 }
 
 .level-stat-bar-container {
@@ -169,6 +170,8 @@ body {
     font-weight: 600;
     color: white;
     white-space: nowrap;
+    text-align: center;
+    min-width: 7.5rem;
 }
 
 .level-stat-counts .pass {
