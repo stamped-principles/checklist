@@ -683,9 +683,11 @@ export {
 
 function updateHeaderHeight() {
     const header = document.querySelector(".header");
-    if (header) {
-        document.documentElement.style.setProperty("--header-height", `${header.offsetHeight}px`);
-    }
+    const toolbar = document.querySelector(".toolbar");
+    const headerHeight = header ? header.offsetHeight : 0;
+    const toolbarHeight = toolbar ? toolbar.offsetHeight : 0;
+    document.documentElement.style.setProperty("--header-height", `${headerHeight}px`);
+    document.documentElement.style.setProperty("--toolbar-offset", `${headerHeight + toolbarHeight}px`);
 }
 
 function init() {
@@ -697,10 +699,13 @@ function init() {
     if (versionEl) versionEl.textContent = "v" + VERSION;
 
     updateHeaderHeight();
-    const header = document.querySelector(".header");
-    if (header && typeof ResizeObserver !== "undefined") {
-        // The observer intentionally runs for the page lifetime; no cleanup needed.
-        new ResizeObserver(updateHeaderHeight).observe(header);
+    if (typeof ResizeObserver !== "undefined") {
+        // The observers intentionally run for the page lifetime; no cleanup needed.
+        const ro = new ResizeObserver(updateHeaderHeight);
+        const header = document.querySelector(".header");
+        const toolbar = document.querySelector(".toolbar");
+        if (header) ro.observe(header);
+        if (toolbar) ro.observe(toolbar);
     }
 }
 
