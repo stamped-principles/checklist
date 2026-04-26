@@ -699,6 +699,7 @@ function init() {
     updateHeaderHeight();
     const header = document.querySelector(".header");
     if (header && typeof ResizeObserver !== "undefined") {
+        // The observer intentionally runs for the page lifetime; no cleanup needed.
         new ResizeObserver(updateHeaderHeight).observe(header);
     }
 }
