@@ -1,6 +1,6 @@
 :root {
     --must-color: #c0392b;
-    --progress-fail-color: #ff6b6b;
+    --progress-fail-color: #ff0000;
     --must-bg: #fdedec;
     --must-border: #e74c3c;
     --should-color: #d4880f;
@@ -131,7 +131,7 @@ body {
 }
 
 .progress-text {
-    font-size: 0.82rem;
+    font-size: 0.84rem;
     margin-top: 0.25rem;
     opacity: 0.9;
     font-weight: 600;
