@@ -272,6 +272,12 @@ test.describe("STAMPED Checklist App", () => {
         await expect(firstLevelRow.locator(".level-stat-pct")).toHaveText("100%");
     });
 
+    test("progress bar and text are visible in print media", async ({ page }) => {
+        await page.emulateMedia({ media: "print" });
+        await expect(page.locator(".progress-bar-container")).toBeVisible();
+        await expect(page.locator("#progressText")).toBeVisible();
+    });
+
     test("toolbar does not render a Share URL button", async ({ page }) => {
         await expect(page.locator("button", { hasText: "Share URL" })).toHaveCount(0);
     });
