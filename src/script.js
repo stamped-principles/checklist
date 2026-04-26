@@ -19,8 +19,17 @@ function normalizeReason(value) {
 function updateReasonCounter(id, reasonValue = "") {
     const counterEl = document.getElementById(`reason_count_${id}`);
     if (counterEl) {
-        counterEl.textContent = `${normalizeReason(reasonValue).length}/${MAX_REASON_LENGTH}`;
+        const len = normalizeReason(reasonValue).length;
+        counterEl.textContent = `${len}/${MAX_REASON_LENGTH}`;
+        counterEl.classList.toggle("warn", len > MAX_REASON_LENGTH / 2 && len < MAX_REASON_LENGTH);
+        counterEl.classList.toggle("limit", len === MAX_REASON_LENGTH);
     }
+}
+
+function autoResizeTextarea(el) {
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
 }
 
 function escapeHtml(text) {
@@ -261,7 +270,7 @@ function buildChecklist() {
                 <button type="button" class="response-btn no-btn" id="no_${id}" onclick="handleResponse('${id}', 'no')">✗ No</button>
               </div>
             </div>
-            <textarea class="reason-input" id="reason_${id}" placeholder="Reason for not meeting requirement..." rows="2" maxlength="${MAX_REASON_LENGTH}" oninput="handleReason('${id}', this.value)"></textarea>
+            <textarea class="reason-input" id="reason_${id}" placeholder="Reason for not meeting requirement..." rows="1" maxlength="${MAX_REASON_LENGTH}" oninput="handleReason('${id}', this.value)"></textarea>
             <div class="reason-counter" id="reason_count_${id}">0/${MAX_REASON_LENGTH}</div>
           </div>
         `;
@@ -308,6 +317,7 @@ function handleResponse(id, value) {
             reasonEl.value = "";
             updateReasonCounter(id, "");
         }
+        if (showReason) autoResizeTextarea(reasonEl);
     }
 
     updateAllCounts();
@@ -321,6 +331,7 @@ function handleReason(id, value) {
     if (reasonEl && reasonEl.value !== normalizedValue) {
         reasonEl.value = normalizedValue;
     }
+    autoResizeTextarea(reasonEl);
     updateReasonCounter(id, normalizedValue);
     autoSave();
 }
@@ -338,6 +349,7 @@ function applyResponseState(id) {
         state.reason = normalizeReason(state.reason);
         reasonEl.value = state.reason;
         updateReasonCounter(id, state.reason);
+        autoResizeTextarea(reasonEl);
     }
     const counterEl = document.getElementById(`reason_count_${id}`);
     if (counterEl) {

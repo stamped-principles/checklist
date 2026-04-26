@@ -319,6 +319,40 @@ test.describe("STAMPED Checklist App", () => {
         await expect(reasonCounter).toHaveText("3/250");
     });
 
+    test("reason counter turns yellow when more than half the limit is used", async ({ page }) => {
+        await page.locator(".no-btn").first().click();
+        const reasonInput = page.locator(".reason-input").first();
+        const reasonCounter = page.locator(".reason-counter").first();
+        await reasonInput.fill("x".repeat(126));
+        await expect(reasonCounter).toHaveClass(/warn/);
+        await expect(reasonCounter).not.toHaveClass(/limit/);
+    });
+
+    test("reason counter turns red when the character limit is reached", async ({ page }) => {
+        await page.locator(".no-btn").first().click();
+        const reasonInput = page.locator(".reason-input").first();
+        const reasonCounter = page.locator(".reason-counter").first();
+        await reasonInput.fill("x".repeat(250));
+        await expect(reasonCounter).toHaveClass(/limit/);
+        await expect(reasonCounter).not.toHaveClass(/warn/);
+    });
+
+    test("reason counter has no color class when below half the limit", async ({ page }) => {
+        await page.locator(".no-btn").first().click();
+        const reasonInput = page.locator(".reason-input").first();
+        const reasonCounter = page.locator(".reason-counter").first();
+        await reasonInput.fill("x".repeat(10));
+        await expect(reasonCounter).not.toHaveClass(/warn/);
+        await expect(reasonCounter).not.toHaveClass(/limit/);
+    });
+
+    test("reason textarea uses single row and is not resizable via drag", async ({ page }) => {
+        const reasonInput = page.locator(".reason-input").first();
+        await expect(reasonInput).toHaveAttribute("rows", "1");
+        const resize = await reasonInput.evaluate((el) => getComputedStyle(el).resize);
+        expect(resize).toBe("none");
+    });
+
     test("reason textarea retains value when switching no to yes and back", async ({ page }) => {
         const noButton = page.locator(".no-btn").first();
         const yesButton = page.locator(".yes-btn").first();
