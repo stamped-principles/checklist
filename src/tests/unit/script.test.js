@@ -94,6 +94,11 @@ describe("buildChecklist and state management", () => {
         expect(reasonInput.getAttribute("maxlength")).toBe("250");
     });
 
+    it("reason textareas start as a single row", () => {
+        const reasonInput = document.querySelector(".reason-input");
+        expect(reasonInput.getAttribute("rows")).toBe("1");
+    });
+
     it("reason textareas include a character counter", () => {
         const reasonCounter = document.querySelector(".reason-counter");
         expect(reasonCounter.textContent).toBe("0/250");

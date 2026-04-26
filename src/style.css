@@ -595,15 +595,18 @@ body {
     display: none;
     width: 100%;
     margin-top: 0.3rem;
-    border: 1px solid var(--border);
-    border-radius: 4px;
+    border: 1px solid #c9d5e0;
+    border-radius: 8px;
     padding: 0.4rem 0.5rem;
     font-size: 0.78rem;
     font-family: inherit;
-    resize: vertical;
+    resize: none;
     color: var(--text);
     background: #fafafa;
-    min-height: 2.5rem;
+    overflow: hidden;
+    transition:
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
 }
 
 .reason-input.visible {
@@ -614,6 +617,7 @@ body {
     outline: none;
     border-color: var(--must-border);
     background: white;
+    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.1);
 }
 
 .reason-counter {
@@ -626,6 +630,14 @@ body {
 
 .reason-counter.visible {
     display: block;
+}
+
+.reason-counter.warn {
+    color: var(--should-color);
+}
+
+.reason-counter.limit {
+    color: var(--must-color);
 }
 
 code {
