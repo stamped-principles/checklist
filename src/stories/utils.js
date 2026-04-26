@@ -47,6 +47,27 @@ export function withPrintStyles(element) {
             }
             .print-preview body,
             .print-preview .container { background: white; }
+            .print-preview .response-ui { display: block !important; }
+            .print-preview .response-btn {
+                border: 1px solid #ddd !important;
+                color: #999 !important;
+                background: white !important;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+            .print-preview .response-btn.active.yes-btn {
+                border-color: #27ae60 !important;
+                color: #27ae60 !important;
+            }
+            .print-preview .response-btn.active.no-btn {
+                border-color: #c0392b !important;
+                color: #c0392b !important;
+            }
+            .print-preview .reason-input.visible {
+                display: block !important;
+                border: 1px solid #ddd !important;
+                background: white !important;
+            }
         `;
         document.head.appendChild(style);
     }
