@@ -1,3 +1,0 @@
-const GA_MEASUREMENT_ID = "G-QHJ7NZM9JJ";
-
-export { GA_MEASUREMENT_ID };
